@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+database:
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: password
+  dbname: task_scheduler
+  charset: utf8mb4
+  max_idle_conns: 10
+  max_open_conns: 100
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+
+scheduler:
+  tick_interval: 5
+  worker_count: 5
+  task_lock_ttl: 30
+
+log:
+  level: info
