@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Trade Simulator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    #game-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; }
+    #ui-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 100; }
+    #ui-layer > * { pointer-events: auto; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+  <div id="ui-layer">
+    <div id="login-screen">
+      <h1>Space Trade Simulator</h1>
+      <div class="login-form">
+        <input type="text" id="player-name" placeholder="Enter your name" value="Trader" />
+        <button id="connect-btn">Connect</button>
+      </div>
+      <div id="login-error" class="error"></div>
+    </div>
+    
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div class="hud-item">
+          <span class="hud-label">Credits:</span>
+          <span id="credits-display">0</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Cargo:</span>
+          <span id="cargo-display">0/100</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Shield:</span>
+          <span id="shield-display">100/100</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Station:</span>
+          <span id="station-display">None</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Faction:</span>
+          <span id="faction-display">Independent</span>
+        </div>
+      </div>
+      <div class="hud-controls">
+        <div class="control-info">
+          <div>W/Up: Throttle</div>
+          <div>A/Left & D/Right: Turn</div>
+          <div>E: Open Trade Menu</div>
+          <div>M: Open Route Planner</div>
+          <div>R: Radar Scan</div>
+          <div>F: Fleet Menu</div>
+          <div>Q: Missions</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="radar-panel" class="radar-panel hidden">
+      <div class="radar-header">
+        <h3>Radar Scan</h3>
+        <button id="close-radar" class="close-btn">×</button>
+      </div>
+      <div class="radar-content">
+        <div class="radar-controls">
+          <button id="scan-btn" class="action-btn">Scan Now</button>
+          <span id="scan-status">Ready</span>
+        </div>
+        <div id="radar-contacts" class="radar-contacts"></div>
+      </div>
+    </div>
+
+    <div id="fleet-ui" class="hidden">
+      <div class="fleet-container">
+        <div class="fleet-header">
+          <h2>Fleet Management</h2>
+          <button id="close-fleet" class="close-btn">×</button>
+        </div>
+        <div class="fleet-content">
+          <div id="fleet-current" class="fleet-section">
+            <h3>Current Fleet</h3>
+            <div id="fleet-info" class="fleet-info">Not in a fleet</div>
+            <div id="fleet-members" class="fleet-members"></div>
+          </div>
+          <div id="fleet-create" class="fleet-section">
+            <h3>Create Fleet</h3>
+            <input type="text" id="fleet-name" placeholder="Fleet name" value="My Fleet" />
+            <select id="fleet-formation">
+              <option value="single">Single</option>
+              <option value="formation">Formation</option>
+              <option value="defensive">Defensive</option>
+              <option value="offensive">Offensive</option>
+            </select>
+            <button id="create-fleet-btn" class="action-btn">Create Fleet</button>
+          </div>
+          <div id="fleet-invites" class="fleet-section">
+            <h3>Fleet Invites</h3>
+            <div id="invite-list" class="invite-list">No pending invites</div>
+          </div>
+          <div id="fleet-actions" class="fleet-section">
+            <h3>Fleet Actions</h3>
+            <button id="leave-fleet-btn" class="action-btn danger" disabled>Leave Fleet</button>
+            <div class="formation-selector">
+              <label>Formation:</label>
+              <select id="change-formation" disabled>
+                <option value="single">Single</option>
+                <option value="formation">Formation</option>
+                <option value="defensive">Defensive</option>
+                <option value="offensive">Offensive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mission-ui" class="hidden">
+      <div class="mission-container">
+        <div class="mission-header">
+          <h2>Missions</h2>
+          <button id="close-mission" class="close-btn">×</button>
+        </div>
+        <div class="mission-content">
+          <div id="active-mission" class="mission-section">
+            <h3>Active Mission</h3>
+            <div id="active-mission-info">No active mission</div>
+          </div>
+          <div id="available-missions" class="mission-section">
+            <h3>Available Missions</h3>
+            <div id="mission-list" class="mission-list"></div>
+          </div>
+          <div id="faction-events" class="mission-section">
+            <h3>Faction Events</h3>
+            <div id="event-list" class="event-list">No recent events</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="trade-ui" class="hidden">
+      <div class="trade-container">
+        <div class="trade-header">
+          <h2 id="trade-station-name">Station</h2>
+          <button id="close-trade" class="close-btn">×</button>
+        </div>
+        <div class="trade-content">
+          <div class="commodity-list" id="commodity-list">
+          </div>
+          <div class="cargo-panel">
+            <h3>Your Cargo</h3>
+            <div id="player-cargo-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="route-ui" class="hidden">
+      <div class="route-container">
+        <div class="route-header">
+          <h2>Route Planner</h2>
+          <button id="close-route" class="close-btn">×</button>
+        </div>
+        <div class="route-content">
+          <div class="route-info" id="route-info">
+            <p>Select a commodity to find best trade route</p>
+          </div>
+          <div class="commodity-selector">
+            <h4>Commodity:</h4>
+            <select id="route-commodity-select"></select>
+          </div>
+          <div class="station-routes" id="station-routes"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
