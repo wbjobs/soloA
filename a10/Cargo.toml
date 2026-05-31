@@ -1,0 +1,41 @@
+[package]
+name = "particle_simulation"
+version = "0.2.0"
+edition = "2021"
+authors = ["Particle Simulation"]
+description = "A networked particle life simulation with egui UI and WebSocket support"
+
+[features]
+default = ["client"]
+client = ["eframe", "egui", "egui_extras", "tokio-tungstenite"]
+server = ["tokio/full", "futures-util"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+
+# 客户端依赖
+eframe = { version = "0.27", default-features = false, features = ["glow"], optional = true }
+egui = { version = "0.27", optional = true }
+egui_extras = { version = "0.27", features = ["image"], optional = true }
+glow = { version = "0.12", optional = true }
+pollster = { version = "0.3", optional = true }
+
+# WebSocket 依赖
+tokio-tungstenite = { version = "0.21", optional = true, features = ["rustls-tls-native-roots"] }
+tokio = { version = "1.0", optional = true, features = ["sync"] }
+futures-util = { version = "0.3", optional = true }
+uuid = { version = "1.0", features = ["serde", "v4"] }
+
+# 服务器专用依赖
+[[bin]]
+name = "particle_server"
+path = "src/server/main.rs"
+required-features = ["server"]
+
+[[bin]]
+name = "particle_client"
+path = "src/client/main.rs"
+required-features = ["client"]
