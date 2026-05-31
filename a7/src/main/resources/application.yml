@@ -1,0 +1,224 @@
+server:
+  port: 8080
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    max-connections: 10000
+    connection-timeout: 20000
+
+spring:
+  application:
+    name: message-gateway
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/message_gateway?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&useServerPrepStmts=true&useLocalSessionState=true&rewriteBatchedStatements=true&cacheResultSetMetadata=true&cacheServerConfiguration=true&elideSetAutoCommits=true&maintainTimeStats=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: MessageGatewayHikariPool
+      maximum-pool-size: 30
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      validation-timeout: 5000
+      leak-detection-threshold: 60000
+      connection-test-query: SELECT 1
+      initialization-fail-timeout: -1
+      register-mbeans: true
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        useLocalSessionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        connection:
+          provider_disables_autocommit: false
+        jdbc:
+          batch_size: 50
+          fetch_size: 50
+
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: 10000
+    lettuce:
+      pool:
+        max-active: 100
+        max-idle: 50
+        min-idle: 20
+        max-wait: 10000
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 15000
+    requested-heartbeat: 60
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+        max-interval: 10000
+        multiplier: 2.0
+    listener:
+      simple:
+        acknowledge-mode: MANUAL
+        prefetch: 10
+        concurrent-consumers: 2
+        max-concurrent-consumers: 10
+        retry:
+          enabled: true
+          initial-interval: 1000
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2.0
+          stateless: true
+        default-requeue-rejected: false
+
+  mail:
+    host: smtp.example.com
+    port: 587
+    username: your_email@example.com
+    password: your_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+
+  task:
+    execution:
+      pool:
+        core-size: 8
+        max-size: 20
+        queue-capacity: 100
+        keep-alive: 60s
+      thread-name-prefix: async-task-
+
+message:
+  gateway:
+    rate-limit:
+      enabled: true
+      default-limit: 100
+      window-seconds: 60
+
+    callback:
+      retry-count: 3
+      retry-interval-ms: 5000
+
+    channels:
+      email:
+        providers:
+          smtp:
+            name: SMTP
+            enabled: true
+            priority: 1
+          sendgrid:
+            name: SendGrid
+            enabled: true
+            priority: 2
+            api-key: ${SENDGRID_API_KEY:your-sendgrid-api-key}
+
+      sms:
+        providers:
+          default:
+            name: DefaultSMS
+            enabled: true
+            priority: 1
+            api-url: http://sms.example.com/send
+            api-key: your-sms-api-key
+
+      push:
+        providers:
+          default:
+            name: DefaultPush
+            enabled: true
+            priority: 1
+            api-url: http://push.example.com/send
+            api-key: your-push-api-key
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        sliding-window-size: 10
+        sliding-window-type: COUNT_BASED
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30000
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        event-consumer-buffer-size: 10
+    instances:
+      emailSmtp:
+        base-config: default
+      emailSendGrid:
+        base-config: default
+      smsDefault:
+        base-config: default
+      pushDefault:
+        base-config: default
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 1000
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        max-wait-duration: 10000
+    instances:
+      emailSend:
+        base-config: default
+      smsSend:
+        base-config: default
+      pushSend:
+        base-config: default
+
+logging:
+  level:
+    root: INFO
+    com.message.gateway: DEBUG
+    com.zaxxer.hikari: DEBUG
+    org.springframework.amqp: INFO
+    org.hibernate.SQL: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,beans,env,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
