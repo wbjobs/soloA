@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+mongodb:
+  uri: mongodb://localhost:27017
+  database: audit_service
+  events_collection: events
+  snapshots_collection: snapshots
+
+kafka:
+  brokers:
+    - localhost:9092
+  topic: audit_events
+  consumer_group: audit_service_consumer
+
+redis:
+  address: localhost:6379
+  password: ""
+  db: 0
+
+snapshot:
+  threshold: 1000

@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package audit;
+
+option go_package = "audit-service/internal/pb";
+
+message VectorClock {
+  map<string, int64> clocks = 1;
+}
+
+message EventMetadata {
+  string trace_id = 1;
+  string service_name = 2;
+  int64 timestamp = 3;
+  string version = 4;
+  map<string, string> extra = 5;
+  VectorClock vector_clock = 6;
+  repeated string parent_event_ids = 7;
+}
+
+message OrderCreatedEvent {
+  string order_id = 1;
+  string user_id = 2;
+  double amount = 3;
+  string status = 4;
+}
+
+message InventoryDeductedEvent {
+  string product_id = 1;
+  int32 quantity = 2;
+  int32 remaining = 3;
+}
+
+message PaymentCompletedEvent {
+  string payment_id = 1;
+  string order_id = 2;
+  double amount = 3;
+  string method = 4;
+}
+
+message AuditEvent {
+  string event_id = 1;
+  string aggregate_id = 2;
+  string aggregate_type = 3;
+  string event_type = 4;
+  int64 sequence = 5;
+  EventMetadata metadata = 6;
+
+  oneof payload {
+    OrderCreatedEvent order_created = 10;
+    InventoryDeductedEvent inventory_deducted = 11;
+    PaymentCompletedEvent payment_completed = 12;
+  }
+}
+
+message Snapshot {
+  string aggregate_id = 1;
+  string aggregate_type = 2;
+  int64 last_sequence = 3;
+  int64 created_at = 4;
+  bytes state = 5;
+}
