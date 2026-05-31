@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "WebRTC Distributed Computing Server",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "pg": "^8.11.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.10",
+    "@types/pg": "^8.11.0",
+    "@types/cors": "^2.8.17",
+    "@types/uuid": "^9.0.8",
+    "@types/node": "^20.11.25",
+    "typescript": "^5.4.2",
+    "tsx": "^4.7.1"
+  }
+}
