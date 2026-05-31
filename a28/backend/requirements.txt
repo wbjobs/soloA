@@ -1,0 +1,12 @@
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+rdkit==2023.9.5
+numpy==1.26.3
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+alembic==1.13.1
+python-multipart==0.0.6
+minio==7.2.3
+python-dotenv==1.0.0
+httpx==0.26.0
