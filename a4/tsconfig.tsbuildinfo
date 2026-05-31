@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/components/controlpanel.tsx","./src/components/factoryscene.tsx","./src/components/reportpanel.tsx","./src/components/statuspanel.tsx","./src/services/api.ts","./src/types/three.d.ts"],"version":"5.9.3"}
