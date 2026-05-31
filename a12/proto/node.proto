@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package node;
+
+option go_package = "./pb;pb";
+
+service NodeService {
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc ExecuteTask(ExecuteTaskRequest) returns (ExecuteTaskResponse);
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  rpc TriggerTask(TriggerTaskRequest) returns (TriggerTaskResponse);
+}
+
+message HeartbeatRequest {
+  string node_id = 1;
+  string host = 2;
+  int32 grpc_port = 3;
+  int64 timestamp = 4;
+}
+
+message HeartbeatResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message TaskConfig {
+  string type = 1;
+  string command = 2;
+  string url = 3;
+  string method = 4;
+  string body = 5;
+  map<string, string> headers = 6;
+  string function_name = 7;
+  map<string, string> params = 8;
+  repeated string args = 9;
+  repeated string env = 10;
+  string work_dir = 11;
+}
+
+message ExecuteTaskRequest {
+  uint64 task_id = 1;
+  string task_name = 2;
+  TaskConfig config = 3;
+  int32 timeout = 4;
+  int32 retry_count = 5;
+  int32 retry_interval = 6;
+  string trigger_type = 7;
+}
+
+message ExecuteTaskResponse {
+  bool success = 1;
+  uint64 log_id = 2;
+  string message = 3;
+}
+
+message GetStatusRequest {
+  string node_id = 1;
+}
+
+message GetStatusResponse {
+  string node_id = 1;
+  string status = 2;
+  int32 running_tasks = 3;
+  int64 last_heartbeat = 4;
+}
+
+message TriggerTaskRequest {
+  uint64 task_id = 1;
+}
+
+message TriggerTaskResponse {
+  bool success = 1;
+  string message = 2;
+}

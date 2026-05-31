@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  mode: release
+
+grpc:
+  port: 50051
+
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: root
+  database: task_scheduler
+  charset: utf8mb4
+  max_idle_conns: 10
+  max_open_conns: 100
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+  lock_ttl: 30
+
+log:
+  level: info
+  filename: ./logs/app.log
+  max_size: 100
+  max_backups: 10
+  max_age: 30
+  compress: true
+
+node:
+  id: node-1
+  heartbeat_interval: 5
+
+alert:
+  email:
+    host: smtp.example.com
+    port: 465
+    username: noreply@example.com
+    password: password
+    from: noreply@example.com
+    to: admin@example.com
+  wechat:
+    webhook_url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=your-key
