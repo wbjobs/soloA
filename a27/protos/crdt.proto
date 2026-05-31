@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package crdt;
+
+service CRDTService {
+  rpc ApplyUpdate(ApplyUpdateRequest) returns (ApplyUpdateResponse);
+  rpc GetDocumentState(GetDocumentStateRequest) returns (GetDocumentStateResponse);
+  rpc BroadcastUpdate(BroadcastUpdateRequest) returns (BroadcastUpdateResponse);
+  rpc SyncDocument(SyncDocumentRequest) returns (SyncDocumentResponse);
+}
+
+message Operation {
+  string type = 1;
+  int32 position = 2;
+  string content = 3;
+  int32 length = 4;
+  string author_id = 5;
+  int64 timestamp = 6;
+  map<string, string> attributes = 7;
+}
+
+message OperationBatch {
+  string document_id = 1;
+  int32 base_version = 2;
+  repeated Operation operations = 3;
+}
+
+message ApplyUpdateRequest {
+  string document_id = 1;
+  string author_id = 2;
+  int32 base_version = 3;
+  repeated Operation operations = 4;
+}
+
+message ApplyUpdateResponse {
+  bool success = 1;
+  int32 new_version = 2;
+  string message = 3;
+  repeated Operation applied_operations = 4;
+}
+
+message GetDocumentStateRequest {
+  string document_id = 1;
+  optional int32 version = 2;
+}
+
+message GetDocumentStateResponse {
+  string document_id = 1;
+  int32 current_version = 2;
+  string content = 3;
+  int64 timestamp = 4;
+}
+
+message BroadcastUpdateRequest {
+  string document_id = 1;
+  OperationBatch batch = 2;
+  string from_client_id = 3;
+}
+
+message BroadcastUpdateResponse {
+  bool success = 1;
+  int32 affected_clients = 2;
+}
+
+message SyncDocumentRequest {
+  string document_id = 1;
+  int32 client_version = 2;
+}
+
+message SyncDocumentResponse {
+  int32 server_version = 1;
+  repeated OperationBatch missing_batches = 2;
+  string current_content = 3;
+}

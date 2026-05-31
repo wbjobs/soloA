@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package version;
+
+service VersionService {
+  rpc SaveSnapshot(SaveSnapshotRequest) returns (SaveSnapshotResponse);
+  rpc GetSnapshot(GetSnapshotRequest) returns (GetSnapshotResponse);
+  rpc ListVersions(ListVersionsRequest) returns (ListVersionsResponse);
+  rpc RevertToVersion(RevertToVersionRequest) returns (RevertToVersionResponse);
+  rpc DeleteVersions(DeleteVersionsRequest) returns (DeleteVersionsResponse);
+}
+
+message SaveSnapshotRequest {
+  string document_id = 1;
+  int32 version = 2;
+  string content = 3;
+  repeated string operation_ids = 4;
+  map<string, string> metadata = 5;
+}
+
+message SaveSnapshotResponse {
+  bool success = 1;
+  string snapshot_id = 2;
+  string message = 3;
+}
+
+message GetSnapshotRequest {
+  string document_id = 1;
+  int32 version = 2;
+}
+
+message GetSnapshotResponse {
+  string snapshot_id = 1;
+  string document_id = 2;
+  int32 version = 3;
+  string content = 4;
+  int64 created_at = 5;
+  map<string, string> metadata = 6;
+}
+
+message ListVersionsRequest {
+  string document_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message VersionInfo {
+  string snapshot_id = 1;
+  int32 version = 2;
+  int64 created_at = 3;
+  int32 operation_count = 4;
+  string author_ids = 5;
+}
+
+message ListVersionsResponse {
+  repeated VersionInfo versions = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message RevertToVersionRequest {
+  string document_id = 1;
+  int32 target_version = 2;
+  string user_id = 3;
+}
+
+message RevertToVersionResponse {
+  bool success = 1;
+  int32 new_version = 2;
+  string message = 3;
+}
+
+message DeleteVersionsRequest {
+  string document_id = 1;
+  repeated int32 versions = 2;
+}
+
+message DeleteVersionsResponse {
+  bool success = 1;
+  int32 deleted_count = 2;
+}

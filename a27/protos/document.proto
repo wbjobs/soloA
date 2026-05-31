@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package document;
+
+service DocumentService {
+  rpc CreateDocument(CreateDocumentRequest) returns (DocumentResponse);
+  rpc GetDocument(GetDocumentRequest) returns (DocumentResponse);
+  rpc UpdateDocument(UpdateDocumentRequest) returns (DocumentResponse);
+  rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse);
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse);
+  rpc CheckDocumentPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
+}
+
+message CreateDocumentRequest {
+  string title = 1;
+  string owner_id = 2;
+  string content_type = 3;
+  map<string, string> metadata = 4;
+}
+
+message GetDocumentRequest {
+  string document_id = 1;
+  string user_id = 2;
+}
+
+message UpdateDocumentRequest {
+  string document_id = 1;
+  string user_id = 2;
+  optional string title = 3;
+  map<string, string> metadata = 4;
+}
+
+message DeleteDocumentRequest {
+  string document_id = 1;
+  string user_id = 2;
+}
+
+message ListDocumentsRequest {
+  string user_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message CheckPermissionRequest {
+  string document_id = 1;
+  string user_id = 2;
+  string action = 3;
+}
+
+message CheckPermissionResponse {
+  bool allowed = 1;
+  string role = 2;
+}
+
+message DocumentResponse {
+  string document_id = 1;
+  string title = 2;
+  string owner_id = 3;
+  string content_type = 4;
+  map<string, string> metadata = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+  int32 version = 8;
+}
+
+message ListDocumentsResponse {
+  repeated DocumentResponse documents = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message DeleteDocumentResponse {
+  bool success = 1;
+}

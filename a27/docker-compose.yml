@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: collab_docs
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  elasticsearch:
+    image: elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "50051:50051"
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://admin:admin123@postgres:5432/collab_docs
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRE_MINUTES=1440
+    depends_on:
+      - postgres
+      - redis
+
+  document-service:
+    build: ./document-service
+    ports:
+      - "50052:50052"
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://admin:admin123@postgres:5432/collab_docs
+      - AUTH_GRPC_URL=auth-service:50051
+    depends_on:
+      - postgres
+      - auth-service
+
+  crdt-service:
+    build: ./crdt-service
+    ports:
+      - "50053:50053"
+      - "8003:8003"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - VERSION_GRPC_URL=version-service:50054
+    depends_on:
+      - redis
+      - version-service
+
+  version-service:
+    build: ./version-service
+    ports:
+      - "50054:50054"
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://admin:admin123@postgres:5432/collab_docs
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin123
+      - MINIO_BUCKET=document-versions
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - postgres
+      - minio
+      - elasticsearch
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - AUTH_GRPC_URL=auth-service:50051
+      - DOCUMENT_GRPC_URL=document-service:50052
+      - CRDT_GRPC_URL=crdt-service:50053
+      - VERSION_GRPC_URL=version-service:50054
+      - JWT_SECRET=your-secret-key-change-in-production
+      - JWT_ALGORITHM=HS256
+      - RATE_LIMIT_PER_MINUTE=60
+    depends_on:
+      - auth-service
+      - document-service
+      - crdt-service
+      - version-service
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  es_data:
