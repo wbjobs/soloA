@@ -1,0 +1,601 @@
+syntax = "proto3";
+
+package game;
+option java_package = "com.game.protocol";
+option java_outer_classname = "GameProtocol";
+
+enum MessageType {
+    MSG_UNKNOWN = 0;
+    
+    MSG_HEARTBEAT_REQ = 1;
+    MSG_HEARTBEAT_RES = 2;
+    
+    MSG_LOGIN_REQ = 10;
+    MSG_LOGIN_RES = 11;
+    MSG_REGISTER_REQ = 12;
+    MSG_REGISTER_RES = 13;
+    MSG_LOGOUT_REQ = 14;
+    MSG_LOGOUT_RES = 15;
+    
+    MSG_CREATE_ROOM_REQ = 20;
+    MSG_CREATE_ROOM_RES = 21;
+    MSG_JOIN_ROOM_REQ = 22;
+    MSG_JOIN_ROOM_RES = 23;
+    MSG_LEAVE_ROOM_REQ = 24;
+    MSG_LEAVE_ROOM_RES = 25;
+    MSG_ROOM_LIST_REQ = 26;
+    MSG_ROOM_LIST_RES = 27;
+    MSG_ROOM_UPDATE_NOTIFY = 28;
+    
+    MSG_SELECT_HERO_REQ = 30;
+    MSG_SELECT_HERO_RES = 31;
+    MSG_START_GAME_REQ = 32;
+    MSG_START_GAME_RES = 33;
+    MSG_GAME_START_NOTIFY = 34;
+    
+    MSG_TURN_START_NOTIFY = 40;
+    MSG_ACTION_REQ = 41;
+    MSG_ACTION_RES = 42;
+    MSG_ACTION_BROADCAST = 43;
+    MSG_GAME_STATE_NOTIFY = 44;
+    
+    MSG_RECONNECT_REQ = 50;
+    MSG_RECONNECT_RES = 51;
+    
+    MSG_GAME_END_NOTIFY = 60;
+    
+    MSG_REPLAY_LIST_REQ = 70;
+    MSG_REPLAY_LIST_RES = 71;
+    MSG_REPLAY_PLAY_REQ = 72;
+    MSG_REPLAY_PLAY_RES = 73;
+    MSG_REPLAY_FRAME_NOTIFY = 74;
+    
+    MSG_LEADERBOARD_REQ = 80;
+    MSG_LEADERBOARD_RES = 81;
+    
+    MSG_FRIEND_LIST_REQ = 90;
+    MSG_FRIEND_LIST_RES = 91;
+    MSG_ADD_FRIEND_REQ = 92;
+    MSG_ADD_FRIEND_RES = 93;
+    MSG_ACCEPT_FRIEND_REQ = 94;
+    MSG_ACCEPT_FRIEND_RES = 95;
+    MSG_REMOVE_FRIEND_REQ = 96;
+    MSG_REMOVE_FRIEND_RES = 97;
+    MSG_FRIEND_REQUEST_LIST_REQ = 98;
+    MSG_FRIEND_REQUEST_LIST_RES = 99;
+    MSG_FRIEND_ONLINE_NOTIFY = 100;
+    
+    MSG_INVITE_FRIEND_REQ = 110;
+    MSG_INVITE_FRIEND_RES = 111;
+    MSG_INVITE_NOTIFY = 112;
+    MSG_ACCEPT_INVITE_REQ = 113;
+    MSG_ACCEPT_INVITE_RES = 114;
+    MSG_DECLINE_INVITE_REQ = 115;
+    MSG_DECLINE_INVITE_RES = 116;
+    
+    MSG_CREATE_AI_ROOM_REQ = 120;
+    MSG_CREATE_AI_ROOM_RES = 121;
+    MSG_AI_ACTION_NOTIFY = 122;
+}
+
+enum RoomStatus {
+    ROOM_WAITING = 0;
+    ROOM_READY = 1;
+    ROOM_PLAYING = 2;
+    ROOM_ENDED = 3;
+}
+
+enum PlayerStatus {
+    PLAYER_OFFLINE = 0;
+    PLAYER_ONLINE = 1;
+    PLAYER_IN_ROOM = 2;
+    PLAYER_READY = 3;
+    PLAYER_PLAYING = 4;
+    PLAYER_DISCONNECTED = 5;
+}
+
+enum ActionType {
+    ACTION_MOVE = 0;
+    ACTION_ATTACK = 1;
+    ACTION_SKILL = 2;
+    ACTION_END_TURN = 3;
+}
+
+enum TargetType {
+    TARGET_SINGLE = 0;
+    TARGET_TEAM = 1;
+    TARGET_AREA = 2;
+    TARGET_SELF = 3;
+}
+
+enum DamageType {
+    DAMAGE_PHYSICAL = 0;
+    DAMAGE_MAGICAL = 1;
+    DAMAGE_TRUE = 2;
+}
+
+enum EffectType {
+    EFFECT_BUFF = 0;
+    EFFECT_DEBUFF = 1;
+    EFFECT_CONTROL = 2;
+}
+
+enum EffectCategory {
+    EFFECT_STUN = 0;
+    EFFECT_POISON = 1;
+    EFFECT_BURN = 2;
+    EFFECT_SLOW = 3;
+    EFFECT_SHIELD = 4;
+    EFFECT_ATK_UP = 5;
+    EFFECT_ATK_DOWN = 6;
+    EFFECT_DEF_UP = 7;
+    EFFECT_DEF_DOWN = 8;
+}
+
+enum LeaderboardType {
+    LEADERBOARD_RATING = 0;
+    LEADERBOARD_LEVEL = 1;
+    LEADERBOARD_WINS = 2;
+}
+
+enum FriendStatus {
+    FRIEND_PENDING = 0;
+    FRIEND_ACCEPTED = 1;
+    FRIEND_REJECTED = 2;
+    FRIEND_BLOCKED = 3;
+}
+
+enum AIDifficulty {
+    AI_EASY = 0;
+    AI_NORMAL = 1;
+    AI_HARD = 2;
+}
+
+message PlayerInfo {
+    int64 user_id = 1;
+    string username = 2;
+    string nickname = 3;
+    string avatar = 4;
+    int32 level = 5;
+    int32 rating = 6;
+    PlayerStatus status = 7;
+    string selected_hero_id = 8;
+    int32 team_id = 9;
+    int32 position = 10;
+    bool is_ready = 11;
+}
+
+message RoomInfo {
+    string room_id = 1;
+    string room_name = 2;
+    int64 owner_id = 3;
+    int32 max_players = 4;
+    int32 current_players = 5;
+    RoomStatus status = 6;
+    repeated PlayerInfo players = 7;
+    int32 game_mode = 8;
+    int64 create_time = 9;
+}
+
+message Position {
+    int32 x = 1;
+    int32 y = 2;
+}
+
+message StatusEffectData {
+    string effect_id = 1;
+    string name = 2;
+    EffectType effect_type = 3;
+    EffectCategory category = 4;
+    int32 duration = 5;
+    int32 remaining_turns = 6;
+    int32 stacks = 7;
+    int32 value = 8;
+}
+
+message HeroState {
+    string hero_id = 1;
+    int32 current_health = 2;
+    int32 max_health = 3;
+    int32 current_mana = 4;
+    int32 max_mana = 5;
+    int32 attack = 6;
+    int32 defense = 7;
+    int32 speed = 8;
+    Position position = 9;
+    bool has_moved = 10;
+    bool has_acted = 11;
+    bool is_alive = 12;
+    repeated StatusEffectData status_effects = 13;
+    map<string, int32> skill_cooldowns = 14;
+    int64 player_id = 15;
+    int32 team_id = 16;
+}
+
+message SkillData {
+    string skill_id = 1;
+    string name = 2;
+    string description = 3;
+    TargetType target_type = 4;
+    DamageType damage_type = 5;
+    int32 damage = 6;
+    int32 healing = 7;
+    int32 cooldown = 8;
+    int32 current_cooldown = 9;
+    int32 range = 10;
+    int32 aoe_radius = 11;
+    int32 priority = 12;
+    int32 mana_cost = 13;
+}
+
+message ActionRequest {
+    ActionType action_type = 1;
+    string hero_id = 2;
+    Position target_position = 3;
+    int64 target_player_id = 4;
+    string target_hero_id = 5;
+    string skill_id = 6;
+    int64 timestamp = 7;
+}
+
+message ActionResult {
+    bool success = 1;
+    string message = 2;
+    ActionType action_type = 3;
+    string source_hero_id = 4;
+    int64 source_player_id = 5;
+    string target_hero_id = 6;
+    int64 target_player_id = 7;
+    int32 damage_dealt = 8;
+    int32 healing_done = 9;
+    repeated StatusEffectData applied_effects = 10;
+    bool target_killed = 11;
+}
+
+message GameState {
+    string match_id = 1;
+    int32 current_turn = 2;
+    int32 current_phase = 3;
+    int64 current_player_id = 4;
+    string current_hero_id = 5;
+    repeated HeroState heroes = 6;
+    repeated int64 turn_order = 7;
+    int64 phase_end_time = 8;
+    bool is_game_over = 9;
+    int64 winner_team_id = 10;
+    string match_log = 11;
+}
+
+message MatchRecord {
+    string match_id = 1;
+    string room_id = 2;
+    int64 start_time = 3;
+    int64 end_time = 4;
+    int32 duration = 5;
+    int64 winner_id = 6;
+    int32 total_turns = 7;
+    repeated PlayerInfo players = 8;
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    bool success = 1;
+    string message = 2;
+    string token = 3;
+    PlayerInfo player_info = 4;
+}
+
+message RegisterRequest {
+    string username = 1;
+    string password = 2;
+    string email = 3;
+    string nickname = 4;
+}
+
+message RegisterResponse {
+    bool success = 1;
+    string message = 2;
+    int64 user_id = 3;
+}
+
+message CreateRoomRequest {
+    string room_name = 1;
+    int32 max_players = 2;
+    string password = 3;
+    int32 game_mode = 4;
+}
+
+message CreateRoomResponse {
+    bool success = 1;
+    string message = 2;
+    RoomInfo room_info = 3;
+}
+
+message JoinRoomRequest {
+    string room_id = 1;
+    string password = 2;
+}
+
+message JoinRoomResponse {
+    bool success = 1;
+    string message = 2;
+    RoomInfo room_info = 3;
+}
+
+message LeaveRoomRequest {
+    string room_id = 1;
+}
+
+message LeaveRoomResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message RoomListRequest {
+    int32 page = 1;
+    int32 page_size = 2;
+    bool only_available = 3;
+}
+
+message RoomListResponse {
+    bool success = 1;
+    string message = 2;
+    int32 total = 3;
+    repeated RoomInfo rooms = 4;
+}
+
+message SelectHeroRequest {
+    string hero_id = 1;
+    int32 position = 2;
+}
+
+message SelectHeroResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message ReconnectRequest {
+    string token = 1;
+    string room_id = 2;
+    string match_id = 3;
+}
+
+message ReconnectResponse {
+    bool success = 1;
+    string message = 2;
+    bool in_game = 3;
+    RoomInfo room_info = 4;
+    GameState game_state = 5;
+}
+
+message ReplayListRequest {
+    int64 user_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message ReplayListResponse {
+    bool success = 1;
+    string message = 2;
+    int32 total = 3;
+    repeated MatchRecord matches = 4;
+}
+
+message ReplayPlayRequest {
+    string match_id = 1;
+}
+
+message ReplayPlayResponse {
+    bool success = 1;
+    string message = 2;
+    MatchRecord match_info = 3;
+}
+
+message LeaderboardEntry {
+    int32 rank = 1;
+    PlayerInfo player = 2;
+    int32 value = 3;
+}
+
+message LeaderboardRequest {
+    LeaderboardType type = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message LeaderboardResponse {
+    bool success = 1;
+    string message = 2;
+    LeaderboardType type = 3;
+    int32 total = 4;
+    repeated LeaderboardEntry entries = 5;
+    int32 player_rank = 6;
+}
+
+message FriendInfo {
+    int64 user_id = 1;
+    string username = 2;
+    string nickname = 3;
+    string avatar = 4;
+    int32 level = 5;
+    int32 rating = 6;
+    PlayerStatus status = 7;
+    FriendStatus friend_status = 8;
+    string alias = 9;
+}
+
+message FriendRequest {
+    int64 request_id = 1;
+    PlayerInfo from_user = 2;
+    string message = 3;
+    FriendStatus status = 4;
+    int64 created_at = 5;
+}
+
+message FriendListRequest {
+    int64 user_id = 1;
+}
+
+message FriendListResponse {
+    bool success = 1;
+    string message = 2;
+    repeated FriendInfo friends = 3;
+}
+
+message AddFriendRequest {
+    string username = 1;
+    string message = 2;
+}
+
+message AddFriendResponse {
+    bool success = 1;
+    string message = 2;
+    FriendInfo friend = 3;
+}
+
+message AcceptFriendRequest {
+    int64 friend_id = 1;
+    bool accept = 2;
+}
+
+message AcceptFriendResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message RemoveFriendRequest {
+    int64 friend_id = 1;
+}
+
+message RemoveFriendResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message FriendRequestListResponse {
+    bool success = 1;
+    string message = 2;
+    repeated FriendRequest pending_requests = 3;
+    repeated FriendRequest sent_requests = 4;
+}
+
+message InviteFriendRequest {
+    int64 friend_id = 1;
+    string room_id = 2;
+    string message = 3;
+}
+
+message InviteFriendResponse {
+    bool success = 1;
+    string message = 2;
+    string invite_id = 3;
+}
+
+message GameInvite {
+    string invite_id = 1;
+    PlayerInfo inviter = 2;
+    string room_id = 3;
+    string message = 4;
+    int64 expires_at = 5;
+}
+
+message AcceptInviteRequest {
+    string invite_id = 1;
+}
+
+message AcceptInviteResponse {
+    bool success = 1;
+    string message = 2;
+    RoomInfo room_info = 3;
+}
+
+message DeclineInviteRequest {
+    string invite_id = 1;
+}
+
+message DeclineInviteResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message CreateAIRoomRequest {
+    int32 ai_count = 1;
+    AIDifficulty difficulty = 2;
+    string hero_id = 3;
+}
+
+message CreateAIRoomResponse {
+    bool success = 1;
+    string message = 2;
+    RoomInfo room_info = 3;
+}
+
+message GameMessage {
+    int32 sequence = 1;
+    MessageType type = 2;
+    int64 sender_id = 3;
+    int64 timestamp = 4;
+    oneof payload {
+        LoginRequest login_request = 10;
+        LoginResponse login_response = 11;
+        RegisterRequest register_request = 12;
+        RegisterResponse register_response = 13;
+        
+        CreateRoomRequest create_room_request = 20;
+        CreateRoomResponse create_room_response = 21;
+        JoinRoomRequest join_room_request = 22;
+        JoinRoomResponse join_room_response = 23;
+        LeaveRoomRequest leave_room_request = 24;
+        LeaveRoomResponse leave_room_response = 25;
+        RoomListRequest room_list_request = 26;
+        RoomListResponse room_list_response = 27;
+        RoomInfo room_info = 28;
+        
+        SelectHeroRequest select_hero_request = 30;
+        SelectHeroResponse select_hero_response = 31;
+        
+        ActionRequest action_request = 41;
+        ActionResult action_result = 42;
+        GameState game_state = 44;
+        
+        ReconnectRequest reconnect_request = 50;
+        ReconnectResponse reconnect_response = 51;
+        
+        MatchRecord match_record = 60;
+        
+        ReplayListRequest replay_list_request = 70;
+        ReplayListResponse replay_list_response = 71;
+        ReplayPlayRequest replay_play_request = 72;
+        ReplayPlayResponse replay_play_response = 73;
+        
+        LeaderboardRequest leaderboard_request = 80;
+        LeaderboardResponse leaderboard_response = 81;
+        
+        FriendListRequest friend_list_request = 90;
+        FriendListResponse friend_list_response = 91;
+        AddFriendRequest add_friend_request = 92;
+        AddFriendResponse add_friend_response = 93;
+        AcceptFriendRequest accept_friend_request = 94;
+        AcceptFriendResponse accept_friend_response = 95;
+        RemoveFriendRequest remove_friend_request = 96;
+        RemoveFriendResponse remove_friend_response = 97;
+        FriendRequestListResponse friend_request_list_response = 98;
+        FriendInfo friend_info = 99;
+        FriendRequest friend_request = 100;
+        
+        InviteFriendRequest invite_friend_request = 110;
+        InviteFriendResponse invite_friend_response = 111;
+        GameInvite game_invite = 112;
+        AcceptInviteRequest accept_invite_request = 113;
+        AcceptInviteResponse accept_invite_response = 114;
+        DeclineInviteRequest decline_invite_request = 115;
+        DeclineInviteResponse decline_invite_response = 116;
+        
+        CreateAIRoomRequest create_ai_room_request = 120;
+        CreateAIRoomResponse create_ai_room_response = 121;
+    }
+}
