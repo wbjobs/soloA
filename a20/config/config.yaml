@@ -1,0 +1,65 @@
+server:
+  port: 8080
+  mode: debug
+
+mysql:
+  host: localhost
+  port: 3306
+  user: root
+  password: root
+  database: iot_platform
+  charset: utf8mb4
+  max_open_conns: 100
+  max_idle_conns: 10
+  conn_max_lifetime: 3600
+
+influxdb:
+  url: http://localhost:8086
+  token: your-token
+  org: your-org
+  bucket: iot_data
+  timeout: 30
+
+kafka:
+  brokers:
+    - localhost:9092
+  topic_device_data: device_data
+  topic_alerts: alerts
+  group_id: iot-platform
+  partition: 0
+  replication_factor: 1
+
+mqtt:
+  broker: tcp://localhost:1883
+  client_id: iot_platform_server
+  username: admin
+  password: admin
+  topic_device_data: devices/+/data
+  topic_device_response: devices/+/response
+  topic_device_command: devices/%s/command
+  qos: 1
+
+jwt:
+  secret: your-jwt-secret-key
+  expire_hours: 24
+
+email:
+  smtp_host: smtp.example.com
+  smtp_port: 465
+  sender: alert@example.com
+  password: your-email-password
+  recipients:
+    - admin@example.com
+
+sms:
+  provider: aliyun
+  access_key_id: your-access-key-id
+  access_key_secret: your-access-key-secret
+  sign_name: 物联网平台
+  template_code: SMS_123456
+  phones:
+    - 13800138000
+
+device_heartbeat:
+  timeout_seconds: 60
+  check_interval_seconds: 30
