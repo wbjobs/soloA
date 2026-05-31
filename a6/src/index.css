@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0a0a1a;
+  color: #fff;
+  overflow: hidden;
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+  
+  .key-press {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+@keyframes hitEffect {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.hit-effect {
+  animation: hitEffect 0.3s ease-out forwards;
+}
+
+@keyframes comboPopup {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.combo-popup {
+  animation: comboPopup 0.2s ease-out;
+}
