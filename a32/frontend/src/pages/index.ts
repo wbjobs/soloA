@@ -1,0 +1,5 @@
+export { HomePage } from './HomePage'
+export { SamplesPage } from './SamplesPage'
+export { GenomeBrowserPage } from './GenomeBrowserPage'
+export { TasksPage } from './TasksPage'
+export { VariantsPage } from './VariantsPage'
