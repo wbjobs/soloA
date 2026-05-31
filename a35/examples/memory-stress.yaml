@@ -1,0 +1,16 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: ChaosExperiment
+name: memory-stress-demo
+namespace: default
+description: 演示内存压力混沌实验
+type: StressChaos
+duration: 5m
+mode: one
+selector:
+  labelSelectors:
+    app: cache-service
+stressChaos:
+  action: memory
+  memory:
+    workers: 1
+    size: 256MB

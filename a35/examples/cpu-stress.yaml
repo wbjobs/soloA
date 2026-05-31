@@ -1,0 +1,16 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: ChaosExperiment
+name: cpu-stress-demo
+namespace: default
+description: 演示CPU压力混沌实验
+type: StressChaos
+duration: 10m
+mode: one
+selector:
+  labelSelectors:
+    app: worker
+stressChaos:
+  action: cpu
+  cpu:
+    workers: 2
+    load: 80

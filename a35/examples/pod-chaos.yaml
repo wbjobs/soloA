@@ -1,0 +1,14 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: ChaosExperiment
+name: pod-kill-demo
+namespace: default
+description: 演示Pod Kill混沌实验，随机杀死指定标签的Pod
+type: PodChaos
+duration: 5m
+mode: one
+selector:
+  labelSelectors:
+    app: demo
+podChaos:
+  action: pod-kill
+  gracePeriod: 0

@@ -1,0 +1,19 @@
+{
+  "apiVersion": "chaos-cli.github.io/v1alpha1",
+  "kind": "ChaosExperiment",
+  "name": "json-pod-kill-demo",
+  "namespace": "default",
+  "description": "JSON格式的Pod Kill实验示例",
+  "type": "PodChaos",
+  "duration": "5m",
+  "mode": "one",
+  "selector": {
+    "labelSelectors": {
+      "app": "demo"
+    }
+  },
+  "podChaos": {
+    "action": "pod-kill",
+    "gracePeriod": 0
+  }
+}

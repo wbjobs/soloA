@@ -1,0 +1,112 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: GameDay
+name: circuit-breaker-validation
+namespace: default
+description: "验证熔断器和降级策略的GameDay演练"
+team: sre
+environment: staging
+
+autoRollback: true
+maxFailures: 1
+timeout: 30m
+notifyChannels:
+  - slack
+  - email
+
+steps:
+  - name: 稳态检查
+    description: "验证系统处于稳态"
+    stepType: checkpoint
+    order: 1
+    delayAfter: 10s
+    continueOnFail: false
+    checkpoint:
+      type: promql
+      name: 服务可用性检查
+      promql:
+        query: sum(rate(http_requests_total{status_code=~"2.."}[5m])) / sum(rate(http_requests_total[5m]))
+        comparisonType: ">="
+        expectedValue: "99"
+        tolerance: "1"
+
+  - name: 注入网络延迟
+    description: "注入100ms网络延迟"
+    stepType: experiment
+    order: 2
+    delayAfter: 30s
+    continueOnFail: false
+    experiment:
+      experimentFile: examples/network-delay.yaml
+      duration: 2m
+
+  - name: 验证熔断器触发
+    description: "检查熔断器是否正确打开"
+    stepType: checkpoint
+    order: 3
+    delayAfter: 15s
+    continueOnFail: false
+    checkpoint:
+      type: k8s
+      name: 熔断器状态检查
+      k8s:
+        resourceType: deployment
+        namespace: default
+        labelSelectors:
+          app: payment-service
+        maxUnavailable: 0
+      assertions:
+        - type: promql
+          key: circuit_breaker_open
+          operator: "=="
+          expected: "1"
+
+  - name: 验证降级策略
+    description: "验证降级策略是否生效"
+    stepType: checkpoint
+    order: 4
+    delayAfter: 10s
+    continueOnFail: true
+    checkpoint:
+      type: http
+      name: 降级服务响应检查
+      http:
+        url: http://payment-service/api/status
+        method: GET
+        expectedStatus: 200
+        timeout: 5s
+        retries: 3
+
+  - name: 停止实验
+    description: "停止网络延迟实验"
+    stepType: action
+    order: 5
+    delayAfter: 5s
+    continueOnFail: false
+    action:
+      type: notify
+      name: 发送通知
+      command: "echo 'GameDay实验即将结束'"
+
+  - name: 验证系统恢复
+    description: "验证系统恢复正常"
+    stepType: checkpoint
+    order: 6
+    delayAfter: 30s
+    continueOnFail: false
+    checkpoint:
+      type: promql
+      name: 系统恢复检查
+      promql:
+        query: sum(rate(http_requests_total{status_code=~"2.."}[5m])) / sum(rate(http_requests_total[5m]))
+        comparisonType: ">="
+        expectedValue: "99"
+        tolerance: "1"
+
+  - name: 完成通知
+    description: "发送GameDay完成通知"
+    stepType: action
+    order: 7
+    action:
+      type: notify
+      name: GameDay完成
+      command: "echo 'GameDay验证完成'"

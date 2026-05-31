@@ -1,0 +1,17 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: ChaosExperiment
+name: network-loss-demo
+namespace: default
+description: 演示网络丢包混沌实验
+type: NetworkChaos
+duration: 5m
+mode: fixed
+value: "2"
+selector:
+  labelSelectors:
+    app: backend-service
+networkChaos:
+  action: loss
+  loss:
+    percentage: "10"
+    correlation: "25"

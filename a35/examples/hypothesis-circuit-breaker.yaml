@@ -1,0 +1,101 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: Hypothesis
+name: circuit-breaker-hypothesis
+description: "验证熔断器在高延迟情况下的行为假设"
+
+steadyState:
+  name: 正常运行状态
+  description: "系统在稳态下的性能指标"
+  duration: 5m
+  sampleRate: 10s
+  metrics:
+    - name: 服务可用性
+      query: sum(rate(http_requests_total{status_code=~"2.."}[5m])) / sum(rate(http_requests_total[5m]))
+      dataSource: prometheus
+      unit: "%"
+      comparison:
+        operator: ">="
+        expected: "99"
+        tolerance: "1"
+
+    - name: P99延迟
+      query: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
+      dataSource: prometheus
+      unit: ms
+      comparison:
+        operator: "<="
+        expected: "500"
+        tolerance: "10"
+
+    - name: 错误率
+      query: sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))
+      dataSource: prometheus
+      unit: "%"
+      comparison:
+        operator: "<="
+        expected: "1"
+        tolerance: "0.5"
+
+experiment:
+  experimentFile: examples/network-delay.yaml
+  startTime: "2024-01-15T10:00:00Z"
+  endTime: "2024-01-15T10:02:00Z"
+
+tolerance:
+  globalTolerance: 0.1
+  metricTolerance:
+    error_rate: 0.05
+    latency_p99: 0.2
+
+hypotheses:
+  - id: H001
+    name: 熔断器应在高延迟时打开
+    description: "当依赖服务响应时间超过阈值时，熔断器应该打开"
+    assumption: "依赖服务网络延迟增加到100ms以上"
+    prediction: "熔断器状态变为打开（circuit_breaker_open=1）"
+    weight: 1.0
+    metrics:
+      - name: 熔断器状态
+        query: circuit_breaker_open{service="payment-service"}
+        dataSource: prometheus
+        expectedChange: increase
+        tolerance: 0.05
+
+  - id: H002
+    name: 降级策略应生效
+    description: "熔断器打开后，降级策略应该生效"
+    assumption: "熔断器已打开"
+    prediction: "降级服务响应正常，成功率保持在95%以上"
+    weight: 1.0
+    metrics:
+      - name: 降级服务成功率
+        query: sum(rate(http_requests_total{service="fallback", status_code=~"2.."}[1m])) / sum(rate(http_requests_total{service="fallback"}[1m]))
+        dataSource: prometheus
+        expectedChange: stable
+        tolerance: 0.1
+
+  - id: H003
+    name: 系统吞吐量应保持稳定
+    description: "即使部分服务降级，整体系统吞吐量不应大幅下降"
+    assumption: "熔断器打开，部分请求被降级"
+    prediction: "系统整体吞吐量下降不超过30%"
+    weight: 0.8
+    metrics:
+      - name: 总吞吐量
+        query: sum(rate(http_requests_total[1m]))
+        dataSource: prometheus
+        expectedChange: decrease
+        tolerance: 0.3
+
+  - id: H004
+    name: 错误率不应大幅上升
+    description: "良好的熔断降级策略应该保持低错误率"
+    assumption: "依赖服务延迟增加"
+    prediction: "整体错误率上升不超过5%"
+    weight: 1.0
+    metrics:
+      - name: 整体错误率
+        query: sum(rate(http_requests_total{status_code=~"5.."}[1m])) / sum(rate(http_requests_total[1m]))
+        dataSource: prometheus
+        expectedChange: increase
+        tolerance: 0.05

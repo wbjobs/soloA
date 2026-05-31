@@ -1,0 +1,50 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: SLO
+name: payment-service-slo
+description: "支付服务的服务水平目标定义"
+service: payment-service
+environment: production
+
+window:
+  duration: 30d
+  periodType: rolling
+
+target: 0.9995
+
+indicators:
+  - name: API可用性
+    type: availability
+    weight: 2.0
+    availability:
+      goodEventsQuery: sum(rate(http_requests_total{service="payment-service", status_code=~"2.."}[1m]))
+      totalEventsQuery: sum(rate(http_requests_total{service="payment-service"}[1m]))
+      successCriteria: ">=99.95%"
+
+  - name: P99延迟
+    type: latency
+    weight: 1.5
+    latency:
+      query: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{service="payment-service"}[5m])) by (le))
+      threshold: 500ms
+      percentile: "99"
+      successPercentage: 99.0
+
+  - name: 订单处理吞吐量
+    type: throughput
+    weight: 1.0
+    throughput:
+      query: sum(rate(http_requests_total{service="payment-service", endpoint="/api/order"}[1m]))
+      minRequestsPerMin: 100
+
+alerting:
+  enabled: true
+  fastBurnThreshold: 14.4
+  slowBurnThreshold: 3.0
+  notificationChannels:
+    - pagerduty
+    - slack
+
+budgetPolicy:
+  consumptionLimit: 0.95
+  maxExperimentsPerWeek: 5
+  safeGuardPercentage: 0.05

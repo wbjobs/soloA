@@ -1,0 +1,17 @@
+apiVersion: chaos-cli.github.io/v1alpha1
+kind: ChaosExperiment
+name: network-delay-demo
+namespace: default
+description: 演示网络延迟混沌实验，增加网络延迟
+type: NetworkChaos
+duration: 10m
+mode: all
+selector:
+  labelSelectors:
+    app: web-service
+networkChaos:
+  action: delay
+  delay:
+    latency: 100ms
+    jitter: 10ms
+    correlation: "25"
