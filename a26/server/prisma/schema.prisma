@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  password    String
+  username    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  scores      Score[]
+  operations  Operation[]
+  comments    Comment[]
+  replies     CommentReply[]
+  fileExports FileExport[]
+  
+  @@map("users")
+}
+
+model Score {
+  id          String    @id @default(uuid())
+  title       String
+  data        Json
+  ownerId     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  owner       User      @relation(fields: [ownerId], references: [id])
+  operations  Operation[]
+  comments    Comment[]
+  fileExports FileExport[]
+  
+  @@map("scores")
+}
+
+model Operation {
+  id         String    @id @default(uuid())
+  scoreId    String
+  userId     String
+  type       String
+  operation  Json
+  timestamp  DateTime  @default(now())
+  version    Int
+  score      Score     @relation(fields: [scoreId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+  
+  @@map("operations")
+  @@index([scoreId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String          @id @default(uuid())
+  scoreId   String
+  userId    String
+  content   String
+  targetType String         @map("target_type")
+  targetId   String?        @map("target_id")
+  staffIndex Int?          @map("staff_index")
+  position   Int?
+  resolved   Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  score      Score         @relation(fields: [scoreId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
+  replies    CommentReply[]
+  
+  @@map("comments")
+  @@index([scoreId])
+  @@index([userId])
+  @@index([targetType, targetId])
+}
+
+model CommentReply {
+  id         String   @id @default(uuid())
+  commentId  String
+  userId     String
+  content    String
+  createdAt  DateTime @default(now())
+  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
+  
+  @@map("comment_replies")
+  @@index([commentId])
+  @@index([userId])
+}
+
+model FileExport {
+  id          String   @id @default(uuid())
+  scoreId     String
+  userId      String
+  fileType    String   @map("file_type")
+  fileName    String   @map("file_name")
+  fileUrl     String   @map("file_url")
+  fileSize    Int      @map("file_size")
+  createdAt   DateTime @default(now())
+  score       Score    @relation(fields: [scoreId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  
+  @@map("file_exports")
+  @@index([scoreId])
+  @@index([userId])
+}
