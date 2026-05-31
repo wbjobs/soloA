@@ -1,0 +1,124 @@
+================================================================================
+PARAMETRIC SENSITIVITY ANALYSIS REPORT
+================================================================================
+
+Analysis Date: 2026-05-10T02:14:35
+Analyzed Parameter: D
+Parameter Values: [0.25, 0.5, 1.0, 2.0, 4.0]
+Number of Simulations: 5
+Model Dimension: 1D
+
+【Base Parameters】
+------------------------------------------------------------
+model_dim           : 1
+nx                  : 50
+ny                  : 50
+Lx                  : 100.0
+Ly                  : 50.0
+t_total             : 30.0
+dt                  : 0.05
+output_freq         : 30
+C0                  : 1.0
+C_left              : 0.0
+C_right             : 0.0
+C_top               : 0.0
+C_bottom            : 0.0
+source_strength     : 10.0
+source_x            : 10.0
+source_y            : 0.0
+source_width        : 5.0
+D                   : 1.0
+vx                  : 0.5
+vy                  : 0.0
+porosity            : 0.3
+retardation         : 1.0
+decay               : 0.0
+is_heterogeneous    : False
+
+【Sensitivity Indices】
+------------------------------------------------------------
+Metric                        Correlation     Trend Slope      Rel Change
+----------------------------------------------------------------------
+final_max                         -0.9646         -0.2698         -0.5962
+final_min                          0.0000          0.0000             N/A
+final_mean                        -0.9714         -0.0590         -0.3728
+total_mass                        -0.9714         -6.0199         -0.3728
+retention_ratio                   -0.9714         -0.0983         -0.3728
+spread_width                       0.9321          5.4422          0.3030
+point_max                         -0.9619         -0.2783         -0.5372
+point_final                       -0.9768         -0.1865         -0.5529
+peak_time                         -0.9703         -1.6000         -0.2667
+arrival_time                      -0.9565         -1.2000         -0.4286
+
+【Simulation Results Summary】
+------------------------------------------------------------
+
+--- Simulation 1: D = 0.25 ---
+  final_max: 1.696905
+  final_min: 0.000000
+  final_mean: 0.593373
+  total_mass: 60.548270
+  retention_ratio: 0.988955
+  spread_width: 67.346939
+  point_max: 1.942854
+  point_final: 1.264756
+  peak_time: 22.500000
+  arrival_time: 10.500000
+
+--- Simulation 2: D = 0.5 ---
+  final_max: 1.590485
+  final_min: 0.000000
+  final_mean: 0.588411
+  total_mass: 60.041919
+  retention_ratio: 0.980685
+  spread_width: 71.428571
+  point_max: 1.826356
+  point_final: 1.219634
+  peak_time: 22.500000
+  arrival_time: 10.500000
+
+--- Simulation 3: D = 1.0 ---
+  final_max: 1.730224
+  final_min: 0.000000
+  final_mean: 0.594493
+  total_mass: 60.662526
+  retention_ratio: 0.990821
+  spread_width: 67.346939
+  point_max: 1.979236
+  point_final: 1.277234
+  peak_time: 22.500000
+  arrival_time: 10.500000
+
+--- Simulation 4: D = 2.0 ---
+  final_max: 1.165008
+  final_min: 0.000000
+  final_mean: 0.533165
+  total_mass: 54.404567
+  retention_ratio: 0.888608
+  spread_width: 81.632653
+  point_max: 1.378287
+  point_final: 0.958703
+  peak_time: 21.000000
+  arrival_time: 7.500000
+
+--- Simulation 5: D = 4.0 ---
+  final_max: 0.685206
+  final_min: 0.000000
+  final_mean: 0.372142
+  total_mass: 37.973641
+  retention_ratio: 0.620236
+  spread_width: 87.755102
+  point_max: 0.899098
+  point_final: 0.565509
+  peak_time: 16.500000
+  arrival_time: 6.000000
+
+【Output Files】
+------------------------------------------------------------
+- sensitivity_D_*.png: Sensitivity curves
+- sensitivity_D_radar.png: Radar chart
+- comparison_D_*.png: Comparison plots
+- sensitivity_D_summary.json: JSON summary
+- sensitivity_report_D.txt: This report
+
+================================================================================

@@ -1,0 +1,4 @@
+index,name,status,duration,C0,C_bottom,C_left,C_right,C_top,D,Lx,Ly,decay,dt,is_heterogeneous,model_dim,nx,ny,output_freq,porosity,retardation,source_strength,source_width,source_x,source_y,t_total,vx,vy,final_mass,final_max,final_mean,final_min,retention_ratio
+1,Simulation_001,success,24.6150,1.0,0.0,0.0,0.0,0.0,1.0,100.0,50.0,0.0,0.1,False,2,40,25,20,0.3,1.0,10.0,5.0,10.0,25.0,40.0,0.5,0.0,217.346287,0.189329,0.040687,0.000000,0.678120
+2,Simulation_002,success,17.8655,1.0,0.0,0.0,0.0,0.0,5.0,100.0,50.0,0.0,0.1,False,2,40,25,20,0.3,1.0,10.0,5.0,10.0,25.0,40.0,0.5,0.0,45478.729193,20.000000,8.513618,0.000000,141.893635
+3,Simulation_003,success,26.3889,1.0,0.0,0.0,0.0,0.0,1.0,100.0,50.0,0.0,0.05,False,2,40,25,40,0.3,1.0,10.0,5.0,10.0,25.0,40.0,2.0,0.0,0.000033,0.000000,0.000000,0.000000,0.000000

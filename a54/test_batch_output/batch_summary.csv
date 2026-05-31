@@ -1,0 +1,3 @@
+index,status,C0,C_bottom,C_left,C_right,C_top,D,Lx,Ly,decay,dt,is_heterogeneous,model_dim,nx,ny,output_freq,porosity,retardation,source_strength,source_width,source_x,source_y,t_total,vx,vy
+1,success,1.0,0.0,0.0,0.0,0.0,0.5,100.0,50.0,0.0,0.05,False,1,50,50,10,0.3,1.0,10.0,5.0,10.0,0.0,10.0,0.5,0.0
+2,success,1.0,0.0,0.0,0.0,0.0,2.0,100.0,50.0,0.0,0.05,False,1,50,50,10,0.3,1.0,10.0,5.0,10.0,0.0,10.0,0.5,0.0

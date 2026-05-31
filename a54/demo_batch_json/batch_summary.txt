@@ -1,0 +1,104 @@
+================================================================================
+BATCH SIMULATION SUMMARY REPORT
+================================================================================
+
+Generated: 2026-05-10 10:16:20.488159
+Start Time: 2026-05-10 10:15:11.609963
+End Time: 2026-05-10 10:16:20.487636
+Total Duration: 68.88 seconds
+Total Simulations: 3
+Successful: 3
+Failed: 0
+
+[==================================================]
+DETAILED RESULTS
+[==================================================]
+
+--- [001] Simulation_001 (SUCCESS) ---
+  Model: 2D
+  Grid: 40 x 25
+  Domain: 100.0m x 50.0m
+  D: 1.0, vx: 0.5, vy: 0.0
+  Duration: 24.62s
+  Output: demo_batch_json\simulation_001_Simulation_001
+  final_max: 0.189329
+  final_min: 0.000000
+  final_mean: 0.040687
+  final_mass: 217.346287
+  retention_ratio: 0.678120
+
+--- [002] Simulation_002 (SUCCESS) ---
+  Model: 2D
+  Grid: 40 x 25
+  Domain: 100.0m x 50.0m
+  D: 5.0, vx: 0.5, vy: 0.0
+  Duration: 17.87s
+  Output: demo_batch_json\simulation_002_Simulation_002
+  final_max: 20.000000
+  final_min: 0.000000
+  final_mean: 8.513618
+  final_mass: 45478.729193
+  retention_ratio: 141.893635
+
+--- [003] Simulation_003 (SUCCESS) ---
+  Model: 2D
+  Grid: 40 x 25
+  Domain: 100.0m x 50.0m
+  D: 1.0, vx: 2.0, vy: 0.0
+  Duration: 26.39s
+  Output: demo_batch_json\simulation_003_Simulation_003
+  final_max: 0.000000
+  final_min: 0.000000
+  final_mean: 0.000000
+  final_mass: 0.000033
+  retention_ratio: 0.000000
+
+[==================================================]
+CONFIGURATION EXAMPLES
+[==================================================]
+
+JSON Format Example:
+[
+  {
+    "name": "Baseline Case",
+    "description": "Standard parameter set",
+    "model_dim": 2,
+    "nx": 50,
+    "ny": 30,
+    "Lx": 100.0,
+    "Ly": 50.0,
+    "t_total": 50.0,
+    "dt": 0.1,
+    "D": 1.0,
+    "vx": 0.5,
+    "vy": 0.0,
+    "source_strength": 10.0,
+    "source_x": 10.0,
+    "source_y": 25.0,
+    "source_width": 5.0
+  },
+  {
+    "name": "High Dispersion",
+    "description": "Increased dispersion coefficient",
+    "model_dim": 2,
+    "nx": 50,
+    "ny": 30,
+    "Lx": 100.0,
+    "Ly": 50.0,
+    "t_total": 50.0,
+    "dt": 0.1,
+    "D": 5.0,
+    "vx": 0.5,
+    "source_strength": 10.0,
+    "source_x": 10.0,
+    "source_y": 25.0,
+    "source_width": 5.0
+  }
+]
+
+CSV Format Example (first row is header):
+name,description,model_dim,nx,ny,Lx,Ly,t_total,dt,D,vx,source_strength
+Case1,Standard,2,50,30,100,50,50,0.1,1.0,0.5,10.0
+Case2,High D,2,50,30,100,50,50,0.1,5.0,0.5,10.0
+
+================================================================================

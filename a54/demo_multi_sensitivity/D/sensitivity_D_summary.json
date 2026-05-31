@@ -1,0 +1,213 @@
+{
+  "parameter": "D",
+  "values": [
+    0.5,
+    1.0,
+    2.0,
+    4.0
+  ],
+  "metric_point": [
+    50.0,
+    0
+  ],
+  "base_parameters": {
+    "model_dim": 1,
+    "nx": 40,
+    "ny": 50,
+    "Lx": 100.0,
+    "Ly": 50.0,
+    "t_total": 20.0,
+    "dt": 0.05,
+    "output_freq": 20,
+    "C0": 1.0,
+    "C_left": 0.0,
+    "C_right": 0.0,
+    "C_top": 0.0,
+    "C_bottom": 0.0,
+    "source_strength": 10.0,
+    "source_x": 10.0,
+    "source_y": 0.0,
+    "source_width": 5.0,
+    "D": 1.0,
+    "vx": 0.5,
+    "vy": 0.0,
+    "porosity": 0.3,
+    "retardation": 1.0,
+    "decay": 0.0,
+    "is_heterogeneous": false
+  },
+  "sensitivity_indices": {
+    "final_max": {
+      "correlation": -0.9195453920629615,
+      "trend_slope": -0.22764352168986618,
+      "relative_change": -0.5366139707662717,
+      "values": [
+        1.4847774551541932,
+        1.7793608875592661,
+        1.1864840142736879,
+        0.6880251292396616
+      ]
+    },
+    "final_min": {
+      "correlation": 0,
+      "trend_slope": 0.0,
+      "relative_change": Infinity,
+      "values": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "final_mean": {
+      "correlation": -0.9704541051467276,
+      "trend_slope": -0.041224211804423136,
+      "relative_change": -0.29869589113751005,
+      "values": [
+        0.48304896584284407,
+        0.496821816347312,
+        0.44927547712864263,
+        0.3387642245273631
+      ]
+    },
+    "total_mass": {
+      "correlation": -0.9704541051467276,
+      "trend_slope": -4.228124287633142,
+      "relative_change": -0.29869589113751005,
+      "values": [
+        49.54348367618914,
+        50.95608372792944,
+        46.07953611575822,
+        34.74504866947314
+      ]
+    },
+    "retention_ratio": {
+      "correlation": -0.9704541051467276,
+      "trend_slope": -0.08244842360884627,
+      "relative_change": -0.29869589113751005,
+      "values": [
+        0.9660979316856881,
+        0.993643632694624,
+        0.8985509542572853,
+        0.6775284490547262
+      ]
+    },
+    "spread_width": {
+      "correlation": 0.9424549558857007,
+      "trend_slope": 8.058608058608058,
+      "relative_change": 0.45833333333333326,
+      "values": [
+        61.53846153846155,
+        53.846153846153854,
+        71.7948717948718,
+        89.74358974358975
+      ]
+    },
+    "point_max": {
+      "correlation": -0.9650219707111172,
+      "trend_slope": -0.14330775144780877,
+      "relative_change": -0.42493672267211896,
+      "values": [
+        1.1803572233373378,
+        1.2616082717677954,
+        1.03587107053906,
+        0.6787800932700071
+      ]
+    },
+    "point_final": {
+      "correlation": -0.9651697187337493,
+      "trend_slope": -0.1447592428524507,
+      "relative_change": -0.4292406908402325,
+      "values": [
+        1.1803572233373378,
+        1.2616082717677954,
+        1.03587107053906,
+        0.6736998733537604
+      ]
+    },
+    "peak_time": {
+      "correlation": -0.9152492334988813,
+      "trend_slope": -0.2857142857142857,
+      "relative_change": -0.05,
+      "values": [
+        20.0,
+        20.0,
+        20.0,
+        19.0
+      ]
+    },
+    "arrival_time": {
+      "correlation": -0.9470450939305312,
+      "trend_slope": -1.1428571428571428,
+      "relative_change": -0.4,
+      "values": [
+        10.0,
+        11.0,
+        9.0,
+        6.0
+      ]
+    }
+  },
+  "simulations": [
+    {
+      "parameter_value": 0.5,
+      "metrics": {
+        "final_max": 1.4847774551541932,
+        "final_min": 0.0,
+        "final_mean": 0.48304896584284407,
+        "total_mass": 49.54348367618914,
+        "retention_ratio": 0.9660979316856881,
+        "spread_width": 61.53846153846155,
+        "point_max": 1.1803572233373378,
+        "point_final": 1.1803572233373378,
+        "peak_time": 20.0,
+        "arrival_time": 10.0
+      }
+    },
+    {
+      "parameter_value": 1.0,
+      "metrics": {
+        "final_max": 1.7793608875592661,
+        "final_min": 0.0,
+        "final_mean": 0.496821816347312,
+        "total_mass": 50.95608372792944,
+        "retention_ratio": 0.993643632694624,
+        "spread_width": 53.846153846153854,
+        "point_max": 1.2616082717677954,
+        "point_final": 1.2616082717677954,
+        "peak_time": 20.0,
+        "arrival_time": 11.0
+      }
+    },
+    {
+      "parameter_value": 2.0,
+      "metrics": {
+        "final_max": 1.1864840142736879,
+        "final_min": 0.0,
+        "final_mean": 0.44927547712864263,
+        "total_mass": 46.07953611575822,
+        "retention_ratio": 0.8985509542572853,
+        "spread_width": 71.7948717948718,
+        "point_max": 1.03587107053906,
+        "point_final": 1.03587107053906,
+        "peak_time": 20.0,
+        "arrival_time": 9.0
+      }
+    },
+    {
+      "parameter_value": 4.0,
+      "metrics": {
+        "final_max": 0.6880251292396616,
+        "final_min": 0.0,
+        "final_mean": 0.3387642245273631,
+        "total_mass": 34.74504866947314,
+        "retention_ratio": 0.6775284490547262,
+        "spread_width": 89.74358974358975,
+        "point_max": 0.6787800932700071,
+        "point_final": 0.6736998733537604,
+        "peak_time": 19.0,
+        "arrival_time": 6.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+[
+    {
+        "model_dim": 1,
+        "nx": 50,
+        "Lx": 100.0,
+        "t_total": 10.0,
+        "dt": 0.05,
+        "output_freq": 10,
+        "D": 0.5,
+        "vx": 0.5,
+        "source_strength": 10.0,
+        "source_x": 10.0,
+        "source_width": 5.0
+    },
+    {
+        "model_dim": 1,
+        "nx": 50,
+        "Lx": 100.0,
+        "t_total": 10.0,
+        "dt": 0.05,
+        "output_freq": 10,
+        "D": 2.0,
+        "vx": 0.5,
+        "source_strength": 10.0,
+        "source_x": 10.0,
+        "source_width": 5.0
+    }
+]

@@ -1,0 +1,56 @@
+======================================================================
+Groundwater Solute Transport Simulation Report
+======================================================================
+
+【Model Parameters】
+--------------------------------------------------
+model_dim: 2
+nx: 40
+ny: 25
+Lx: 100.0
+Ly: 50.0
+t_total: 40.0
+dt: 0.1
+output_freq: 20
+C0: 1.0
+C_left: 0.0
+C_right: 0.0
+C_top: 0.0
+C_bottom: 0.0
+source_strength: 10.0
+source_x: 10.0
+source_y: 25.0
+source_width: 5.0
+D: 1.0
+vx: 0.5
+vy: 0.0
+porosity: 0.3
+retardation: 1.0
+decay: 0.0
+is_heterogeneous: False
+
+【Simulation Statistics】
+--------------------------------------------------
+Time steps: 21
+Total time: 40.0
+Final max concentration: 10.000000
+Final min concentration: 0.000000
+Final mean concentration: 0.040687
+
+Mass conservation:
+  Initial mass: 320.512821
+  Final mass: 217.346287
+  Mass ratio: 0.6781
+
+【Output Files】
+--------------------------------------------------
+- concentration_2d.png: 2D heatmap
+- frame_*.png: Animation frames
+- results.vtk: VTK data file
+- time_series.png: Time series curves
+- mass_conservation.png: Mass conservation plot
+- concentration_range.png: Concentration range evolution
+- report.txt: This report
+- simulation.log: Simulation log
+
+======================================================================

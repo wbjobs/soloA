@@ -1,0 +1,112 @@
+================================================================================
+PARAMETRIC SENSITIVITY ANALYSIS REPORT
+================================================================================
+
+Analysis Date: 2026-05-10T02:15:09
+Analyzed Parameter: vx
+Parameter Values: [0.25, 0.5, 1.0, 2.0]
+Number of Simulations: 4
+Model Dimension: 1D
+
+【Base Parameters】
+------------------------------------------------------------
+model_dim           : 1
+nx                  : 40
+ny                  : 50
+Lx                  : 100.0
+Ly                  : 50.0
+t_total             : 20.0
+dt                  : 0.05
+output_freq         : 20
+C0                  : 1.0
+C_left              : 0.0
+C_right             : 0.0
+C_top               : 0.0
+C_bottom            : 0.0
+source_strength     : 10.0
+source_x            : 10.0
+source_y            : 0.0
+source_width        : 5.0
+D                   : 1.0
+vx                  : 0.5
+vy                  : 0.0
+porosity            : 0.3
+retardation         : 1.0
+decay               : 0.0
+is_heterogeneous    : False
+
+【Sensitivity Indices】
+------------------------------------------------------------
+Metric                        Correlation     Trend Slope      Rel Change
+----------------------------------------------------------------------
+final_max                         -0.9856         -0.9231         -0.9413
+final_min                          0.0000          0.0000             N/A
+final_mean                        -0.9398         -0.2505         -0.9641
+total_mass                        -0.9398        -25.6904         -0.9641
+retention_ratio                   -0.9398         -0.5010         -0.9641
+spread_width                      -0.5922         -8.7912         -0.3158
+point_max                          0.6791          0.7271          8.0540
+point_final                       -0.4850         -0.0898         -0.9942
+peak_time                         -0.9729         -8.0000         -0.7000
+arrival_time                      -0.9594         -5.7143         -0.7692
+
+【Simulation Results Summary】
+------------------------------------------------------------
+
+--- Simulation 1: vx = 0.25 ---
+  final_max: 1.716277
+  final_min: 0.000000
+  final_mean: 0.454656
+  total_mass: 46.631353
+  retention_ratio: 0.909311
+  spread_width: 48.717949
+  point_max: 0.157996
+  point_final: 0.157996
+  peak_time: 20.000000
+  arrival_time: 13.000000
+
+--- Simulation 2: vx = 0.5 ---
+  final_max: 1.779361
+  final_min: 0.000000
+  final_mean: 0.496822
+  total_mass: 50.956084
+  retention_ratio: 0.993644
+  spread_width: 53.846154
+  point_max: 1.261608
+  point_final: 1.261608
+  peak_time: 20.000000
+  arrival_time: 11.000000
+
+--- Simulation 3: vx = 1.0 ---
+  final_max: 1.051508
+  final_min: 0.000000
+  final_mean: 0.421822
+  total_mass: 43.263809
+  retention_ratio: 0.843644
+  spread_width: 64.102564
+  point_max: 1.348699
+  point_final: 0.443199
+  peak_time: 12.000000
+  arrival_time: 6.000000
+
+--- Simulation 4: vx = 2.0 ---
+  final_max: 0.100790
+  final_min: 0.000000
+  final_mean: 0.016313
+  total_mass: 1.673100
+  retention_ratio: 0.032625
+  spread_width: 33.333333
+  point_max: 1.430508
+  point_final: 0.000924
+  peak_time: 6.000000
+  arrival_time: 3.000000
+
+【Output Files】
+------------------------------------------------------------
+- sensitivity_vx_*.png: Sensitivity curves
+- sensitivity_vx_radar.png: Radar chart
+- comparison_vx_*.png: Comparison plots
+- sensitivity_vx_summary.json: JSON summary
+- sensitivity_report_vx.txt: This report
+
+================================================================================
