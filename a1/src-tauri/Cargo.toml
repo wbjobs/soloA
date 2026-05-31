@@ -1,0 +1,27 @@
+[package]
+name = "pomodoro-app"
+version = "0.1.0"
+description = "A Pomodoro Timer Desktop App"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "pomodoro_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "global-shortcut"] }
+tauri-plugin-notification = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
+directories = "5"
+rodio = "0.17"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

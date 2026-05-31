@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+        }
+        #floating-ball {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ball {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            user-select: none;
+            -webkit-app-region: no-drag;
+        }
+        .ball:active {
+            cursor: grabbing;
+        }
+        .time {
+            color: white;
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            margin-top: 4px;
+            box-shadow: 0 0 8px #22c55e;
+            animation: pulse 1s infinite;
+        }
+        .status-dot.idle {
+            background: #94a3b8;
+            box-shadow: none;
+            animation: none;
+        }
+        .status-dot.paused {
+            background: #f59e0b;
+            box-shadow: none;
+            animation: none;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div id="floating-ball">
+        <div class="ball" id="ball">
+            <span class="time" id="time">25:00</span>
+            <div class="status-dot idle" id="status-dot"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        const { listen } = __TAURI__.event;
+        const { getCurrent, getWebviewWindow } = __TAURI__.webviewWindow;
+
+        const ball = document.getElementById('ball');
+        const timeEl = document.getElementById('time');
+        const statusDot = document.getElementById('status-dot');
+        const floatingWindow = getCurrent();
+
+        let isDragging = false;
+        let dragStartTime = 0;
+        let status = 'idle';
+        let remaining = 25 * 60;
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            timeEl.textContent = formatTime(remaining);
+            
+            statusDot.className = 'status-dot';
+            if (status === 'idle') {
+                statusDot.classList.add('idle');
+            } else if (status === 'paused') {
+                statusDot.classList.add('paused');
+            }
+        }
+
+        async function startDragging(e) {
+            e.preventDefault();
+            isDragging = true;
+            dragStartTime = Date.now();
+            try {
+                await floatingWindow.startDragging();
+            } catch (err) {
+                console.error('Failed to start dragging:', err);
+            }
+        }
+
+        function handleClick(e) {
+            const dragDuration = Date.now() - dragStartTime;
+            if (dragDuration < 200) {
+                showMainWindow();
+            }
+        }
+
+        async function showMainWindow() {
+            if (isDragging) return;
+            try {
+                const mainWindow = getWebviewWindow('main');
+                if (mainWindow) {
+                    const isVisible = await mainWindow.isVisible();
+                    if (isVisible) {
+                        await mainWindow.setFocus();
+                    } else {
+                        await mainWindow.show();
+                        await mainWindow.setFocus();
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to show main window:', err);
+            }
+        }
+
+        ball.addEventListener('mousedown', startDragging);
+        ball.addEventListener('mouseup', handleClick);
+
+        await listen('floating-update', (event) => {
+            const data = event.payload;
+            status = data.status;
+            remaining = data.remaining;
+            updateDisplay();
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
