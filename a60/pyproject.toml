@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "depchecker"
+version = "0.1.0"
+description = "跨平台命令行工具，用于静态分析不同语言项目的依赖冲突"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name = "Trae Assistant" }
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "click>=8.0",
+  "packaging>=21.0",
+  "defusedxml>=0.7.0",
+]
+
+[project.scripts]
+depchecker = "depchecker.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"depchecker" = "src/depchecker"

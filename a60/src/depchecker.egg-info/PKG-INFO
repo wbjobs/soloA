@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: depchecker
+Version: 0.1.0
+Summary: 跨平台命令行工具，用于静态分析不同语言项目的依赖冲突
+Author: Trae Assistant
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.0
+Requires-Dist: packaging>=21.0
+Requires-Dist: defusedxml>=0.7.0

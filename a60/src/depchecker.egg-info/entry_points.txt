@@ -1,0 +1,2 @@
+[console_scripts]
+depchecker = depchecker.cli:main
