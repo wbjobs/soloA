@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ProseMirror {
+  outline: none;
+  min-height: 400px;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror pre {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #3b82f6;
+  padding-left: 1rem;
+  color: #6b7280;
+  margin: 1rem 0;
+}
+
+.ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1rem 0;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0.875rem 0;
+}
+
+.ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.75rem 0;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.ProseMirror li {
+  margin: 0.25rem 0;
+}
+
+.remote-cursor {
+  position: absolute;
+  border-left: 2px solid;
+  border-right: 2px solid;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+}
+
+.remote-cursor::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-top: 6px solid;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+}
+
+.remote-cursor-label {
+  position: absolute;
+  top: -1.2rem;
+  left: -2px;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  color: white;
+  white-space: nowrap;
+}
+
+.comment-highlight {
+  background-color: rgba(59, 130, 246, 0.2);
+  border-bottom: 2px dashed #3b82f6;
+}
+
+.comment-highlight:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+}
