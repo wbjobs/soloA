@@ -1,0 +1,75 @@
+{
+  "name": "data-visualizer",
+  "version": "1.0.0",
+  "description": "跨平台数据库管理与数据可视化桌面应用",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:electron": "tsc -p tsconfig.node.json",
+    "electron:dev": "npm run build:electron && concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "electron:build": "npm run build && npm run build:electron && electron-builder",
+    "preview": "vite preview"
+  },
+  "build": {
+    "appId": "com.datavisualizer.app",
+    "productName": "DataVisualizer",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "mac": {
+      "target": ["dmg", "zip"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    }
+  },
+  "dependencies": {
+    "echarts": "^5.5.0",
+    "echarts-for-react": "^3.0.2",
+    "electron-store": "^8.2.0",
+    "mysql2": "^3.10.0",
+    "pg": "^8.12.0",
+    "better-sqlite3": "^11.1.0",
+    "mongodb": "^6.8.0",
+    "ssh2": "^1.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.24.0",
+    "xlsx": "^0.18.5",
+    "papaparse": "^5.4.1",
+    "sql-formatter": "^15.3.1",
+    "zustand": "^4.5.4",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/pg": "^8.11.6",
+    "@types/mongodb": "^4.0.7",
+    "@types/ssh2": "^1.15.1",
+    "@types/papaparse": "^5.3.14",
+    "@types/better-sqlite3": "^7.6.11",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3",
+    "electron": "^31.2.1",
+    "electron-builder": "^24.13.3",
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0",
+    "cross-env": "^7.0.3",
+    "tailwindcss": "^3.4.6",
+    "postcss": "^8.4.39",
+    "autoprefixer": "^10.4.19",
+    "@types/node": "^20.14.10"
+  }
+}

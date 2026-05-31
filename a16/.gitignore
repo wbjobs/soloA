@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-electron/
+release/
+.idea/
+.vscode/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+.DS_Store
+Thumbs.db
+electron-builder/
