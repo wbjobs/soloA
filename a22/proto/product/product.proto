@@ -1,0 +1,148 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "e-commerce-fulfillment/proto/product;product";
+
+service ProductService {
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+  rpc CreateSKU(CreateSKURequest) returns (CreateSKUResponse);
+  rpc GetSKU(GetSKURequest) returns (GetSKUResponse);
+  rpc GetSKUByCode(GetSKUByCodeRequest) returns (GetSKUResponse);
+  rpc UpdateSKU(UpdateSKURequest) returns (UpdateSKUResponse);
+  rpc DeleteSKU(DeleteSKURequest) returns (DeleteSKUResponse);
+}
+
+message CreateProductRequest {
+  string name = 1;
+  string description = 2;
+  string category = 3;
+  string brand = 4;
+}
+
+message CreateProductResponse {
+  bool success = 1;
+  string message = 2;
+  int64 product_id = 3;
+}
+
+message GetProductRequest {
+  int64 product_id = 1;
+}
+
+message GetProductResponse {
+  bool success = 1;
+  string message = 2;
+  Product product = 3;
+}
+
+message ListProductsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string category = 3;
+  string keyword = 4;
+}
+
+message ListProductsResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Product products = 3;
+  int64 total = 4;
+}
+
+message UpdateProductRequest {
+  int64 product_id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+  string brand = 5;
+}
+
+message UpdateProductResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteProductRequest {
+  int64 product_id = 1;
+}
+
+message DeleteProductResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CreateSKURequest {
+  int64 product_id = 1;
+  string sku_code = 2;
+  string attributes = 3;
+  double price = 4;
+  int32 stock_quantity = 5;
+}
+
+message CreateSKUResponse {
+  bool success = 1;
+  string message = 2;
+  int64 sku_id = 3;
+}
+
+message GetSKURequest {
+  int64 sku_id = 1;
+}
+
+message GetSKUByCodeRequest {
+  string sku_code = 1;
+}
+
+message GetSKUResponse {
+  bool success = 1;
+  string message = 2;
+  SKU sku = 3;
+}
+
+message UpdateSKURequest {
+  int64 sku_id = 1;
+  string attributes = 2;
+  double price = 3;
+  int32 stock_quantity = 4;
+}
+
+message UpdateSKUResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteSKURequest {
+  int64 sku_id = 1;
+}
+
+message DeleteSKUResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string category = 4;
+  string brand = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+  repeated SKU skus = 8;
+}
+
+message SKU {
+  int64 id = 1;
+  int64 product_id = 2;
+  string sku_code = 3;
+  string attributes = 4;
+  double price = 5;
+  int32 stock_quantity = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}

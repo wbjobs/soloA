@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "e-commerce-fulfillment/proto/order;order";
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+  rpc PayOrder(PayOrderRequest) returns (PayOrderResponse);
+}
+
+message CreateOrderRequest {
+  int64 user_id = 1;
+  string shipping_address = 2;
+  string remark = 3;
+  repeated OrderItem items = 4;
+}
+
+message OrderItem {
+  string sku_code = 1;
+  int32 quantity = 2;
+  double unit_price = 3;
+}
+
+message CreateOrderResponse {
+  bool success = 1;
+  string message = 2;
+  string order_id = 3;
+  Order order = 4;
+}
+
+message GetOrderRequest {
+  string order_id = 1;
+  int64 user_id = 2;
+}
+
+message GetOrderResponse {
+  bool success = 1;
+  string message = 2;
+  Order order = 3;
+}
+
+message ListOrdersRequest {
+  int64 user_id = 1;
+  int32 status = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message ListOrdersResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Order orders = 3;
+  int64 total = 4;
+}
+
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  int32 new_status = 2;
+}
+
+message UpdateOrderStatusResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CancelOrderRequest {
+  string order_id = 1;
+  int64 user_id = 2;
+  string reason = 3;
+}
+
+message CancelOrderResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message PayOrderRequest {
+  string order_id = 1;
+  int64 user_id = 2;
+  string payment_method = 3;
+}
+
+message PayOrderResponse {
+  bool success = 1;
+  string message = 2;
+  string payment_id = 3;
+}
+
+message Order {
+  string id = 1;
+  int64 user_id = 2;
+  int32 status = 3;
+  double total_amount = 4;
+  double discount_amount = 5;
+  double pay_amount = 6;
+  string shipping_address = 7;
+  string remark = 8;
+  int64 created_at = 9;
+  int64 updated_at = 10;
+  int64 paid_at = 11;
+  int64 shipped_at = 12;
+  int64 completed_at = 13;
+  repeated OrderDetailItem items = 14;
+}
+
+message OrderDetailItem {
+  int64 id = 1;
+  string order_id = 2;
+  string sku_code = 3;
+  int32 quantity = 4;
+  double unit_price = 5;
+  double total_price = 6;
+}
+
+enum OrderStatus {
+  UNKNOWN = 0;
+  PENDING_PAYMENT = 1;
+  PAID = 2;
+  SHIPPED = 3;
+  COMPLETED = 4;
+  CANCELLED = 5;
+}

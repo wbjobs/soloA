@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package payment;
+
+option go_package = "e-commerce-fulfillment/proto/payment;payment";
+
+service PaymentService {
+  rpc CreatePayment(CreatePaymentRequest) returns (CreatePaymentResponse);
+  rpc GetPayment(GetPaymentRequest) returns (GetPaymentResponse);
+  rpc RefundPayment(RefundPaymentRequest) returns (RefundPaymentResponse);
+}
+
+message CreatePaymentRequest {
+  string order_id = 1;
+  int64 user_id = 2;
+  double amount = 3;
+  string payment_method = 4;
+}
+
+message CreatePaymentResponse {
+  bool success = 1;
+  string message = 2;
+  string payment_id = 3;
+  int32 status = 4;
+}
+
+message GetPaymentRequest {
+  string payment_id = 1;
+  string order_id = 2;
+}
+
+message GetPaymentResponse {
+  bool success = 1;
+  string message = 2;
+  Payment payment = 3;
+}
+
+message RefundPaymentRequest {
+  string payment_id = 1;
+  string order_id = 2;
+  double amount = 3;
+  string reason = 4;
+}
+
+message RefundPaymentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message Payment {
+  string id = 1;
+  string order_id = 2;
+  int64 user_id = 3;
+  double amount = 4;
+  int32 status = 5;
+  string payment_method = 6;
+  string transaction_id = 7;
+  int64 created_at = 8;
+  int64 paid_at = 9;
+}
+
+enum PaymentStatus {
+  PAYMENT_UNKNOWN = 0;
+  PAYMENT_PENDING = 1;
+  PAYMENT_SUCCESS = 2;
+  PAYMENT_FAILED = 3;
+  PAYMENT_REFUNDED = 4;
+}

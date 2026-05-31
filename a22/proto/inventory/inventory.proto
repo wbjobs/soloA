@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+package inventory;
+
+option go_package = "e-commerce-fulfillment/proto/inventory;inventory";
+
+service InventoryService {
+  rpc DeductInventory(DeductInventoryRequest) returns (DeductInventoryResponse);
+  rpc RollbackInventory(RollbackInventoryRequest) returns (RollbackInventoryResponse);
+  rpc ConfirmInventory(ConfirmInventoryRequest) returns (ConfirmInventoryResponse);
+  rpc GetInventory(GetInventoryRequest) returns (GetInventoryResponse);
+  rpc SetInventory(SetInventoryRequest) returns (SetInventoryResponse);
+  rpc BatchDeductInventory(BatchDeductInventoryRequest) returns (BatchDeductInventoryResponse);
+  rpc RouteInventory(RouteInventoryRequest) returns (RouteInventoryResponse);
+  rpc RouteBatchInventory(RouteBatchInventoryRequest) returns (RouteBatchInventoryResponse);
+}
+
+message DeductInventoryRequest {
+  string sku_code = 1;
+  int32 quantity = 2;
+  string order_id = 3;
+  string operation_id = 4;
+}
+
+message DeductInventoryResponse {
+  bool success = 1;
+  string message = 2;
+  string operation_id = 3;
+}
+
+message RollbackInventoryRequest {
+  string order_id = 1;
+  string operation_id = 2;
+}
+
+message RollbackInventoryResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ConfirmInventoryRequest {
+  string order_id = 1;
+  string operation_id = 2;
+}
+
+message ConfirmInventoryResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetInventoryRequest {
+  string sku_code = 1;
+}
+
+message GetInventoryResponse {
+  bool success = 1;
+  string message = 2;
+  string sku_code = 3;
+  int32 available_quantity = 4;
+  int32 frozen_quantity = 5;
+  int32 sold_quantity = 6;
+}
+
+message SetInventoryRequest {
+  string sku_code = 1;
+  int32 quantity = 2;
+}
+
+message SetInventoryResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message BatchDeductInventoryRequest {
+  string order_id = 1;
+  repeated DeductItem items = 2;
+}
+
+message DeductItem {
+  string sku_code = 1;
+  int32 quantity = 2;
+}
+
+message BatchDeductInventoryResponse {
+  bool success = 1;
+  string message = 2;
+  string operation_id = 3;
+}
+
+message RouteInventoryRequest {
+  string sku_code = 1;
+  int32 quantity = 2;
+  string shipping_address = 3;
+}
+
+message RoutingResult {
+  int64 warehouse_id = 1;
+  string warehouse_code = 2;
+  double distance = 3;
+}
+
+message RouteInventoryResponse {
+  bool success = 1;
+  string message = 2;
+  repeated RoutingResult routing_results = 3;
+}
+
+message RouteBatchInventoryRequest {
+  repeated DeductItem items = 1;
+  string shipping_address = 2;
+}
+
+message SKURoutingResult {
+  string sku_code = 1;
+  repeated RoutingResult routing_results = 2;
+}
+
+message RouteBatchInventoryResponse {
+  bool success = 1;
+  string message = 2;
+  repeated SKURoutingResult sku_routing_results = 3;
+}

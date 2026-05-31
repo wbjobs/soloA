@@ -1,0 +1,51 @@
+server:
+  http_port: 8080
+  grpc_user_port: 50051
+  grpc_product_port: 50052
+  grpc_inventory_port: 50053
+  grpc_order_port: 50054
+  grpc_payment_port: 50055
+
+database:
+  mysql:
+    dsn: "root:password@tcp(127.0.0.1:3306)/ecommerce?charset=utf8mb4&parseTime=True&loc=Local"
+  redis:
+    addr: "127.0.0.1:6379"
+    password: ""
+    db: 0
+
+etcd:
+  endpoints:
+    - "127.0.0.1:2379"
+
+kafka:
+  brokers:
+    - "127.0.0.1:9092"
+  topics:
+    order_created: "order.created"
+    order_paid: "order.paid"
+    order_cancelled: "order.cancelled"
+    inventory_deducted: "inventory.deducted"
+    inventory_rolled_back: "inventory.rolled_back"
+
+jwt:
+  secret: "your-secret-key-change-in-production"
+  expire_hours: 24
+
+service_names:
+  api_gateway: "api-gateway"
+  user_service: "user-service"
+  product_service: "product-service"
+  inventory_service: "inventory-service"
+  order_service: "order-service"
+  payment_service: "payment-service"
+
+tracing:
+  enabled: true
+  endpoint: "localhost:4317"
+  protocol: "grpc"
+  service_version: "1.0.0"
+  environment: "development"
+
+order:
+  payment_timeout_minutes: 30
