@@ -1,0 +1,17 @@
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+python-multipart==0.0.6
+pydantic==2.5.3
+h5py==3.10.0
+numpy==1.26.3
+scipy==1.11.4
+gmsh==4.12.1
+dolfinx==0.7.3
+mpi4py==3.1.5
+petsc4py==3.20.4
+ufl==2023.2.0
+ffcx==0.7.0
+alembic==1.13.1
+python-dotenv==1.0.0
