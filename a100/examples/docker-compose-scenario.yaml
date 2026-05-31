@@ -1,0 +1,82 @@
+metadata:
+  name: "docker-compose-chaos"
+  version: "1.0.0"
+  description: "Chaos scenario for Docker Compose environment"
+  duration: 120
+  author: "DevOps Team"
+
+targets:
+  orchestrator: docker-compose
+  compose_file: "docker-compose.yml"
+  project_name: "myapp"
+  services:
+    - "api"
+    - "worker"
+    - "database"
+
+experiments:
+  - name: "api-latency-injection"
+    fault_type: network-latency
+    parameters:
+      type: NetworkLatency
+      latency_ms: 300
+      jitter_ms: 150
+      ports:
+        - 80
+        - 443
+    duration: 120
+    phase: main
+
+  - name: "worker-cpu-stress"
+    fault_type: cpu-stress
+    parameters:
+      type: CPUStress
+      cpu_cores: 2
+    duration: 120
+    phase: main
+
+  - name: "database-memory-stress"
+    fault_type: memory-stress
+    parameters:
+      type: MemoryStress
+      memory_mb: 512
+      workers: 2
+    duration: 120
+    phase: main
+
+observability:
+  prometheus:
+    url: "http://localhost:9090"
+    query_timeout_ms: 30000
+    step: 10
+    tls_verify: false
+  metrics:
+    - name: "container-cpu"
+      query: "rate(container_cpu_usage_seconds_total[5m])"
+      description: "Container CPU usage"
+      threshold: 1.5
+    - name: "container-memory"
+      query: "container_memory_usage_bytes / 1024 / 1024"
+      description: "Container memory usage (MB)"
+      threshold: 1024
+    - name: "http-requests"
+      query: "sum(rate(http_requests_total[5m]))"
+      description: "Total HTTP requests"
+      threshold: 500
+
+security:
+  pre_snapshot: false
+  timeout: 240
+  big_red_button:
+    enabled: true
+    lock_type: redis
+    redis:
+      url: "redis://localhost:6379"
+      key: "chaos:big-red-button"
+      ttl: 60
+    ttl: 60
+  auto_recover: true
+
+tags:
+  environment: "staging"
+  platform: "docker"

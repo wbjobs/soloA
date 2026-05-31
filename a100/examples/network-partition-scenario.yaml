@@ -1,0 +1,103 @@
+metadata:
+  name: "network-partition-test"
+  version: "1.0.0"
+  description: "Simulate network partitions to test system resilience"
+  duration: 90
+  author: "Reliability Team"
+
+targets:
+  orchestrator: kubernetes
+  namespace: "production"
+  label_selector: "tier=backend"
+  kubeconfig: "/etc/kubernetes/admin.conf"
+
+experiments:
+  - name: "isolate-frontend-from-backend"
+    fault_type: network-partition
+    parameters:
+      type: NetworkPartition
+      direction: outbound
+      targets:
+        - "api-service.production.svc.cluster.local"
+      ports:
+        - 8080
+        - 9090
+      protocol: tcp
+    duration: 60
+    phase: pre
+
+  - name: "total-partition-database"
+    fault_type: network-partition
+    parameters:
+      type: NetworkPartition
+      direction: both
+      targets:
+        - "postgres-0.postgres.production.svc.cluster.local"
+      ports:
+        - 5432
+      protocol: tcp
+    duration: 90
+    phase: main
+
+  - name: "redis-cache-partition"
+    fault_type: network-partition
+    parameters:
+      type: NetworkPartition
+      direction: both
+      targets:
+        - "redis-master.redis.svc.cluster.local"
+      ports:
+        - 6379
+      protocol: tcp
+    duration: 45
+    phase: post
+
+observability:
+  prometheus:
+    url: "http://prometheus.monitoring:9090"
+    query_timeout_ms: 30000
+    step: 5
+  metrics:
+    - name: "partition-impact-qps"
+      query: "sum(rate(http_requests_total[1m])) by (service)"
+      description: "QPS during partition"
+      threshold: 100
+    - name: "partition-error-rate"
+      query: "sum(rate(http_requests_total{status=~\"5..\"}[1m])) by (service) / sum(rate(http_requests_total[1m])) by (service)"
+      description: "Error rate during partition"
+      threshold: 0.1
+    - name: "circuit-breaker-tripped"
+      query: "resilience4j_circuitbreaker_state"
+      description: "Circuit breaker state (1=open, 0=closed)"
+      threshold: 0.5
+    - name: "retry-attempts"
+      query: "resilience4j_retry_calls_total"
+      description: "Retry attempts"
+      threshold: 100
+
+security:
+  pre_snapshot: true
+  snapshot_targets:
+    etcd:
+      endpoints:
+        - "https://10.0.0.1:2379"
+        - "https://10.0.0.2:2379"
+        - "https://10.0.0.3:2379"
+  timeout: 300
+  big_red_button:
+    enabled: true
+    lock_type: etcd
+    etcd:
+      endpoints:
+        - "https://10.0.0.1:2379"
+        - "https://10.0.0.2:2379"
+        - "https://10.0.0.3:2379"
+      key: "/chaos/emergency-stop"
+      ttl: 60
+    ttl: 60
+  auto_recover: true
+
+tags:
+  test: "resilience"
+  category: "network"
+  severity: "high"

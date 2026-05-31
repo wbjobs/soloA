@@ -1,0 +1,113 @@
+metadata:
+  name: "baremetal-chaos-experiment"
+  version: "1.0.0"
+  description: "Chaos scenario for bare-metal servers via SSH"
+  duration: 240
+  author: "SRE Team"
+
+targets:
+  orchestrator: ssh
+  hosts:
+    - hostname: "server1.prod.internal"
+      port: 22
+      username: "root"
+      private_key: "~/.ssh/production_key"
+    - hostname: "server2.prod.internal"
+      port: 22
+      username: "admin"
+      private_key: "~/.ssh/production_key"
+    - hostname: "server3.prod.internal"
+      port: 22
+      username: "root"
+      private_key: "~/.ssh/production_key"
+  parallel: true
+  filters:
+    percentage: 66
+
+experiments:
+  - name: "network-partition-database"
+    fault_type: network-partition
+    parameters:
+      type: NetworkPartition
+      direction: both
+      targets:
+        - "db-master.prod.internal"
+      ports:
+        - 5432
+      protocol: tcp
+    duration: 120
+    phase: main
+
+  - name: "cpu-and-memory-stress"
+    fault_type: cpu-stress
+    parameters:
+      type: CPUStress
+      cpu_percent: 70
+    duration: 180
+    phase: main
+
+  - name: "disk-io-slowdown"
+    fault_type: disk-io
+    parameters:
+      type: DiskIO
+      device: "/dev/nvme0n1"
+      read_delay_ms: 100
+      write_delay_ms: 150
+    duration: 180
+    phase: main
+
+observability:
+  prometheus:
+    url: "http://prometheus.prod.internal:9090"
+    query_timeout_ms: 30000
+    step: 15
+    tls_verify: true
+  metrics:
+    - name: "node-cpu"
+      query: "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"
+      description: "Node CPU usage (%)"
+      threshold: 85
+    - name: "node-memory"
+      query: "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"
+      description: "Node memory usage (%)"
+      threshold: 90
+    - name: "disk-io-wait"
+      query: "rate(node_disk_io_time_seconds_total[5m])"
+      description: "Disk I/O wait time"
+      threshold: 0.5
+    - name: "network-drops"
+      query: "rate(node_network_receive_drop_total[5m]) + rate(node_network_transmit_drop_total[5m])"
+      description: "Network packet drops"
+      threshold: 10
+    - name: "uptime"
+      query: "node_time_seconds - node_boot_time_seconds"
+      description: "System uptime (seconds)"
+      threshold: null
+
+security:
+  pre_snapshot: true
+  snapshot_targets:
+    database:
+      db_type: postgresql
+      host: "db-master.prod.internal"
+      port: 5432
+      user: "backup"
+      database: "critical"
+  timeout: 600
+  big_red_button:
+    enabled: true
+    lock_type: etcd
+    etcd:
+      endpoints:
+        - "https://etcd-1.prod.internal:2379"
+        - "https://etcd-2.prod.internal:2379"
+        - "https://etcd-3.prod.internal:2379"
+      key: "/chaos-platform/big-red-button"
+      ttl: 120
+    ttl: 120
+  auto_recover: true
+
+tags:
+  environment: "production"
+  tier: "bare-metal"
+  critical: "true"

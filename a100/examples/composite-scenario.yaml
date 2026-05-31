@@ -1,0 +1,134 @@
+metadata:
+  name: "composite-chaos-experiment"
+  version: "1.0.0"
+  description: "Composite chaos scenario with 5 concurrent fault types"
+  duration: 180
+  author: "Chaos Engineering Team"
+
+targets:
+  orchestrator: kubernetes
+  namespace: "default"
+  label_selector: "app=microservice"
+  kubeconfig: "~/.kube/config"
+  filters:
+    percentage: 50
+
+experiments:
+  - name: "network-latency-injection"
+    fault_type: network-latency
+    parameters:
+      type: NetworkLatency
+      latency_ms: 250
+      jitter_ms: 100
+      correlation_percent: 30
+      loss_percent: 3
+      interface: "eth0"
+    duration: 180
+    phase: main
+
+  - name: "cpu-stress-test"
+    fault_type: cpu-stress
+    parameters:
+      type: CPUStress
+      cpu_percent: 80
+    duration: 180
+    phase: main
+
+  - name: "memory-pressure"
+    fault_type: memory-stress
+    parameters:
+      type: MemoryStress
+      memory_percent: 60
+      workers: 4
+    duration: 180
+    phase: main
+
+  - name: "disk-io-throttling"
+    fault_type: disk-io
+    parameters:
+      type: DiskIO
+      device: "/dev/sda"
+      read_delay_ms: 200
+      write_delay_ms: 300
+    duration: 180
+    phase: main
+
+  - name: "service-degradation"
+    fault_type: service-fault
+    parameters:
+      type: ServiceFault
+      protocol: http
+      endpoints:
+        - "api.internal:8080"
+        - "database.internal:5432"
+      error_code: 503
+      error_percent: 25
+      delay_ms: 1500
+    duration: 180
+    phase: main
+
+observability:
+  prometheus:
+    url: "http://prometheus.monitoring:9090"
+    query_timeout_ms: 30000
+    step: 15
+    tls_verify: false
+  metrics:
+    - name: "request-rate"
+      query: "sum(rate(http_requests_total[5m])) by (service)"
+      description: "QPS - Requests per second per service"
+      baseline_window: 60
+      threshold: 1000
+    - name: "p95-latency"
+      query: "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))"
+      description: "95th percentile latency"
+      baseline_window: 60
+      threshold: 0.3
+    - name: "error-rate"
+      query: "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (service) / sum(rate(http_requests_total[5m])) by (service)"
+      description: "5xx error rate"
+      baseline_window: 60
+      threshold: 0.05
+    - name: "cpu-usage"
+      query: "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"
+      description: "Node CPU usage"
+      baseline_window: 60
+      threshold: 90
+    - name: "memory-usage"
+      query: "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"
+      description: "Node memory usage"
+      baseline_window: 60
+      threshold: 85
+
+security:
+  pre_snapshot: true
+  snapshot_targets:
+    etcd:
+      endpoints:
+        - "https://etcd-0.etcd:2379"
+        - "https://etcd-1.etcd:2379"
+        - "https://etcd-2.etcd:2379"
+      ca_cert: "/etc/kubernetes/pki/etcd/ca.crt"
+      cert: "/etc/kubernetes/pki/etcd/server.crt"
+      key: "/etc/kubernetes/pki/etcd/server.key"
+    database:
+      db_type: postgresql
+      host: "postgres.database"
+      port: 5432
+      user: "postgres"
+      database: "production"
+  timeout: 300
+  big_red_button:
+    enabled: true
+    lock_type: redis
+    redis:
+      url: "redis://redis-ha.redis:6379"
+      key: "chaos-platform:big-red-button"
+      ttl: 60
+    ttl: 60
+  auto_recover: true
+
+tags:
+  environment: "production"
+  tier: "critical"
+  team: "platform"
