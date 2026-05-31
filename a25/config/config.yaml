@@ -1,0 +1,70 @@
+server:
+  port: 8080
+  grpc_port: 9000
+
+database:
+  mysql:
+    host: localhost
+    port: 3306
+    username: root
+    password: password
+    database: message_center
+    charset: utf8mb4
+    max_open_conns: 100
+    max_idle_conns: 10
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 100
+
+kafka:
+  brokers:
+    - localhost:9092
+  topics:
+    message_send: message_send_topic
+    delivery_status: delivery_status_topic
+  group_id: message_center_group
+
+clickhouse:
+  host: localhost
+  port: 9000
+  username: default
+  password: ""
+  database: message_center
+
+apns:
+  key_id: your_key_id
+  team_id: your_team_id
+  bundle_id: your.bundle.id
+  private_key_path: ./certs/apns.p8
+  production: false
+
+fcm:
+  server_key: your_fcm_server_key
+  sender_id: your_sender_id
+
+sms:
+  aliyun:
+    access_key_id: your_access_key_id
+    access_key_secret: your_access_key_secret
+    sign_name: your_sign_name
+  tencent:
+    secret_id: your_secret_id
+    secret_key: your_secret_key
+    sign: your_sign
+
+email:
+  smtp:
+    host: smtp.example.com
+    port: 587
+    username: no-reply@example.com
+    password: your_password
+    from_name: Message Center
+
+limits:
+  default_qps: 100
+  default_daily_limit: 100000
+  burst: 50
