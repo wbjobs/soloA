@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 地质体可视化工具</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        #loading.show {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #3498db;
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <div class="main-container">
+        <header class="header">
+            <h1>3D 地质体可视化工具</h1>
+            <div class="header-info">
+                <span id="file-info">未加载文件</span>
+            </div>
+        </header>
+        
+        <div class="content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3>文件操作</h3>
+                    <div class="file-upload">
+                        <label for="las-file" class="upload-btn">选择 LAS 文件</label>
+                        <input type="file" id="las-file" accept=".las,.laz" />
+                        <button id="upload-btn" disabled>上传并解析</button>
+                    </div>
+                    <div class="stats" id="stats-panel" style="display: none;">
+                        <p>点云总数: <span id="total-points">0</span></p>
+                        <p>采样点数: <span id="sampled-points">0</span></p>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h3>模型简化</h3>
+                    <select id="simplify-method">
+                        <option value="voxel">体素网格下采样</option>
+                        <option value="random">随机采样</option>
+                        <option value="uniform">均匀采样</option>
+                    </select>
+                    <div class="param-group">
+                        <label>体素大小: <span id="voxel-size-val">1.0</span></label>
+                        <input type="range" id="voxel-size" min="0.1" max="10" step="0.1" value="1.0" />
+                    </div>
+                    <div class="param-group">
+                        <label>采样比例: <span id="sample-ratio-val">0.1</span></label>
+                        <input type="range" id="sample-ratio" min="0.01" max="1" step="0.01" value="0.1" />
+                    </div>
+                    <button id="simplify-btn" disabled>简化模型</button>
+                </div>
+                
+                <div class="panel">
+                    <h3>剖切操作</h3>
+                    <div class="param-group">
+                        <label>剖切类型</label>
+                        <select id="cut-type">
+                            <option value="plane">平面剖切</option>
+                        </select>
+                    </div>
+                    <div class="param-group">
+                        <label>剖切平面法向量</label>
+                        <div class="vector-input">
+                            <input type="number" id="normal-x" value="0" step="0.1" />
+                            <input type="number" id="normal-y" value="1" step="0.1" />
+                            <input type="number" id="normal-z" value="0" step="0.1" />
+                        </div>
+                    </div>
+                    <div class="param-group">
+                        <label>剖切位置: <span id="cut-pos-val">0</span></label>
+                        <input type="range" id="cut-position" min="-100" max="100" step="0.1" value="0" />
+                    </div>
+                    <button id="cut-btn" disabled>执行剖切</button>
+                    <button id="reset-cut-btn" disabled>重置剖切</button>
+                    <button id="cross-section-btn" disabled>生成剖面图</button>
+                </div>
+                
+                <div class="panel">
+                    <h3>等值线</h3>
+                    <div class="param-group">
+                        <label>等高线数量: <span id="contour-levels-val">10</span></label>
+                        <input type="range" id="contour-levels" min="3" max="30" step="1" value="10" />
+                    </div>
+                    <div class="param-group">
+                        <label>网格分辨率: <span id="grid-res-val">100</span></label>
+                        <input type="range" id="grid-resolution" min="50" max="200" step="10" value="100" />
+                    </div>
+                    <div class="param-group">
+                        <label>
+                            <input type="checkbox" id="smooth-contour" checked />
+                            平滑处理
+                        </label>
+                    </div>
+                    <button id="contour-btn" disabled>生成等值线</button>
+                    <button id="hide-contour-btn" disabled>隐藏等值线</button>
+                </div>
+                
+                <div class="panel">
+                    <h3>属性映射</h3>
+                    <div class="param-group">
+                        <label>选择属性</label>
+                        <select id="attribute-select" disabled>
+                            <option value="">加载数据后显示</option>
+                        </select>
+                    </div>
+                    <div class="param-group">
+                        <label>颜色映射</label>
+                        <select id="colormap-select" disabled>
+                            <option value="viridis">Viridis (默认)</option>
+                            <option value="plasma">Plasma</option>
+                            <option value="jet">Jet</option>
+                            <option value="rainbow">Rainbow</option>
+                            <option value="terrain">Terrain</option>
+                            <option value="reds">Reds</option>
+                            <option value="greens">Greens</option>
+                            <option value="blues">Blues</option>
+                        </select>
+                    </div>
+                    <div class="param-group">
+                        <label>
+                            <input type="checkbox" id="invert-colormap" />
+                            反转颜色
+                        </label>
+                    </div>
+                    <div class="attr-info" id="attr-info" style="display: none;">
+                        <p>最小值: <span id="attr-min">-</span></p>
+                        <p>最大值: <span id="attr-max">-</span></p>
+                        <p>平均值: <span id="attr-mean">-</span></p>
+                    </div>
+                    <button id="apply-attr-btn" disabled>应用属性</button>
+                    <button id="reset-attr-btn" disabled>重置颜色</button>
+                </div>
+                
+                <div class="panel">
+                    <h3>导出操作</h3>
+                    <button id="export-json-btn" disabled>导出 JSON</button>
+                    <button id="screenshot-btn" disabled>保存截图</button>
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                <div id="scene-container">
+                    <canvas id="three-canvas"></canvas>
+                    <div class="controls-info">
+                        <p>鼠标左键: 旋转 | 鼠标滚轮: 缩放 | 鼠标右键: 平移</p>
+                    </div>
+                    <div id="colorbar-container" style="display: none;">
+                        <canvas id="colorbar-canvas" width="30" height="300"></canvas>
+                        <div class="colorbar-labels">
+                            <span id="colorbar-max">max</span>
+                            <span id="colorbar-min">min</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="cross-section-panel" style="display: none;">
+                    <div class="section-header">
+                        <h3>二维剖面图</h3>
+                        <div class="section-tools">
+                            <select id="measure-mode">
+                                <option value="none">无测量</option>
+                                <option value="distance">距离测量</option>
+                                <option value="angle">角度测量</option>
+                            </select>
+                            <button id="clear-measurements">清除测量</button>
+                            <button id="close-section-btn">关闭</button>
+                        </div>
+                    </div>
+                    <div class="measurements-info" id="measurements-info" style="display: none;">
+                        <div class="measure-item" id="measure-display">
+                            <span id="measure-label">测量结果:</span>
+                            <span id="measure-value">-</span>
+                        </div>
+                    </div>
+                    <canvas id="cross-section-canvas"></canvas>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/cutting.js"></script>
+    <script src="js/contour.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
