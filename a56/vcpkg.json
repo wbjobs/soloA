@@ -1,0 +1,17 @@
+{
+  "name": "kerning-adjuster",
+  "version": "1.0.0",
+  "description": "跨平台字体字距校准工具",
+  "dependencies": [
+    {
+      "name": "qt5",
+      "features": ["base"]
+    },
+    {
+      "name": "freetype"
+    },
+    {
+      "name": "nlohmann-json"
+    }
+  ]
+}
